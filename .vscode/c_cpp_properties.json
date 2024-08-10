@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "name": "Web",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compilerPath": "${workspaceFolder}/emsdk/upstream/emscripten/em++.bat" 
+        }
+    ],
+    "version": 4
+}

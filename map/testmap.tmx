@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="8" tileheight="8" infinite="1" nextlayerid="5" nextobjectid="5">
+ <editorsettings>
+  <export target="../assets/testmap.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" name="tranquil_tunnels" tilewidth="8" tileheight="8" tilecount="16384" columns="128">
+  <image source="../assets/[v1.3] tranquil_tunnels_transparent.png" width="1024" height="1024"/>
+ </tileset>
+ <layer id="1" name="Tile Layer 1" width="30" height="20">
+  <data encoding="csv">
+   <chunk x="0" y="0" width="16" height="16">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+259,260,262,260,260,262,260,261,262,261,261,260,261,262,260,263
+</chunk>
+  </data>
+ </layer>
+ <layer id="3" name="Tile Layer 2" width="30" height="20">
+  <data encoding="csv"/>
+ </layer>
+ <objectgroup id="2" name="Collision"/>
+ <objectgroup id="4" name="Spawn">
+  <object id="4" x="8" y="112">
+   <point/>
+  </object>
+ </objectgroup>
+</map>
