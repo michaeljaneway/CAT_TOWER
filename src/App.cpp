@@ -430,15 +430,15 @@ void App::RenderSystem()
                    0.0,
                    WHITE);
 
-    setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-    GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "AARON SMELLS");
-    setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-    GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "AARON SMELLS");
+    // setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+    // GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "AARON SMELLS");
+    // setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+    // GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "AARON SMELLS");
 
-    setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-    GuiLabel(Rectangle{40 + 5, 450 + 5, screen_w - 80, 200}, "LIKE FLOWERS");
-    setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-    GuiLabel(Rectangle{40, 450, screen_w - 80, 200}, "LIKE FLOWERS");
+    // setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+    // GuiLabel(Rectangle{40 + 5, 450 + 5, screen_w - 80, 200}, "LIKE FLOWERS");
+    // setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+    // GuiLabel(Rectangle{40, 450, screen_w - 80, 200}, "LIKE FLOWERS");
 
     EndTextureMode();
 }
