@@ -148,17 +148,20 @@ void Map::parseTileLayer(cute_tiled_layer_t *layer)
             if (FlippedVerticallyFlag & tile_flags)
                 src_rect.height *= -1;
 
-            // if (FlippedAntiDiagonallyFlag & tile_flags)
-            // {
-            //     src_rect.width *= -1;
-            //     src_rect.height *= -1;
-            // }
+            float tile_rotation = 0.0;
+            if (FlippedAntiDiagonallyFlag & tile_flags)
+            {
+                tile_rotation = 90.f;
+            }
 
-            Rectangle dest_rect = {(float)column * tile_w, (float)row * tile_h, (float)tile_w, (float)tile_h};
+            Rectangle dest_rect = {(float)column * tile_w + tile_w / 2.f,
+                                   (float)row * tile_h + tile_h / 2.f,
+                                   (float)tile_w,
+                                   (float)tile_h};
 
             // Draw to the rendertexture
             BeginTextureMode(layer_info.tex);
-            DrawTexturePro(this_tile_info->tex, src_rect, dest_rect, {0.f, 0.f}, 0.0, WHITE);
+            DrawTexturePro(this_tile_info->tex, src_rect, dest_rect, {tile_w / 2.f, tile_h / 2.f}, tile_rotation, WHITE);
             EndTextureMode();
         }
     }

@@ -541,6 +541,7 @@ void App::MapPosSystem()
     switch (game_state)
     {
     // In main menu, let just a bit of the map peak out of the top
+    case plt::GameState_Lose:
     case plt::GameState_MainMenu:
     {
         ideal_map_pos.y = (map_dest.height + 20) * -1.f;
@@ -548,6 +549,7 @@ void App::MapPosSystem()
     break;
 
     // While playing, try to vertically center on the player
+    case plt::GameState_Win:
     case plt::GameState_Playing:
     {
         ideal_map_pos.y = screen_h / 2.0 - map_dest.height * player_vert_progress;
@@ -664,9 +666,9 @@ void App::RenderSystem()
         GuiLabel(Rectangle{40, 170, screen_w - 80, 50}, "Do you have what it takes...");
 
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 60, 17);
-        GuiLabel(Rectangle{40 + 5, 230 + 5, screen_w - 80, 50}, "TO CLIMB THE TOWER?");
+        GuiLabel(Rectangle{40 + 5, 230 + 5, screen_w - 80, 50}, "TO CLIMB THE CAT TOWER?");
         setGuiTextStyle(absolute_font, ColorToInt(RED), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 60, 17);
-        GuiLabel(Rectangle{40, 230, screen_w - 80, 50}, "TO CLIMB THE TOWER?");
+        GuiLabel(Rectangle{40, 230, screen_w - 80, 50}, "TO CLIMB THE CAT TOWER?");
 
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
         GuiLabel(Rectangle{(screen_w * 0.23f * 0.f) + 5, 310 + 5, screen_w * 0.3f, 50}, "Use WASD to");
@@ -837,10 +839,11 @@ void App::RenderSystem()
 
         if (GuiButton(Rectangle{screen_w * 0.23f, 400, screen_w - (screen_w * 0.5f), 100}, "RESTART"))
         {
-            gameReset();
             game_state = plt::GameState_Playing;
+            gameReset();
         }
 
+        // Menu Button
         setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
         if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
         {
@@ -864,14 +867,17 @@ void App::RenderSystem()
 
         if (GuiButton(Rectangle{screen_w * 0.23f, 400, screen_w - (screen_w * 0.5f), 100}, "RESTART"))
         {
-            gameReset();
             game_state = plt::GameState_Playing;
+            StopSound(game_over_sound);
+            gameReset();
         }
 
+        // Menu Button
         setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
         if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
         {
             game_state = plt::GameState_MainMenu;
+            StopSound(game_over_sound);
             gameReset();
         }
     }
