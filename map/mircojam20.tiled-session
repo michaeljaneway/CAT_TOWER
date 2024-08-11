@@ -5,15 +5,24 @@
     ],
     "fileStates": {
         "": {
-            "scaleInDock": 1.5
+            "scaleInDock": 0.75
         },
         "realtestmap.tmx": {
+            "expandedObjectLayers": [
+                10,
+                3,
+                8,
+                7
+            ],
             "scale": 4,
-            "selectedLayer": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 37,
-                "y": 55.125
+                "x": 92.875,
+                "y": 86.75
             }
+        },
+        "realtestmap.tmx#alienscape_tileset_transparent": {
+            "scaleInDock": 3
         },
         "realtestmap.tmx#tranquiltunnels": {
             "scaleInDock": 1
@@ -23,37 +32,39 @@
                 2,
                 4
             ],
-            "scale": 5.5,
+            "scale": 2,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 39.36363636363637,
-                "y": 60.54545454545455
+                "x": 63.25,
+                "y": 90
             }
         },
         "testmap.tmx#tranquil_tunnels": {
             "scaleInDock": 5.5
         },
         "testmap2.tmx": {
-            "scale": 5.5,
-            "selectedLayer": 1,
+            "scale": 2,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 173.72727272727272,
-                "y": 7205.545454545454
+                "x": 162.75,
+                "y": 7855
             }
         },
         "testmap2.tmx#[v1.3] tranquil_tunnels_transparent": {
-            "scaleInDock": 2
+            "scaleInDock": 1
         }
     },
     "last.imagePath": "E:/Coding/MicroJam20/assets",
     "openFiles": [
-        "testmap2.tmx"
+        "realtestmap.tmx",
+        "testmap2.tmx",
+        "testmap.tmx"
     ],
     "project": "mircojam20.tiled-project",
     "recentFiles": [
-        "testmap2.tmx",
         "realtestmap.tmx",
-        "testmap.tmx"
+        "testmap.tmx",
+        "testmap2.tmx"
     ],
     "tileset.tileSize": {
         "height": 9,
