@@ -76,10 +76,6 @@ struct MoveInfo
     GridVal blocked_by;
 };
 
-
-// Include easing library
-#include "easing.h"
-
 // Random small classes/functions
 #include "util.hpp"
 

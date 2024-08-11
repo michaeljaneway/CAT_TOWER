@@ -16,7 +16,6 @@ private:
     // Map and map-related values
     //--------------------------------------------------------------------------------------
     std::unique_ptr<Map> map;
-    Vector2 map_pos_offset;
 
     // Grid-based Map
     //--------------------------------------------------------------------------------------
@@ -63,9 +62,6 @@ private:
     Font absolute_font;
     //--------------------------------------------------------------------------------------
 
-    plt::LoopingEase map_x_ease;
-    plt::LoopingEase map_y_ease;
-
     // Textures
     //--------------------------------------------------------------------------------------
 
@@ -108,6 +104,11 @@ private:
 
     // Get input from player
     void PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player);
+    float player_vert_progress; // Player Vertical Progress
+
+    // Map position system
+    void MapPosSystem();
+    Rectangle map_dest;
 
     // Render the world after all updates
     void RenderSystem();
