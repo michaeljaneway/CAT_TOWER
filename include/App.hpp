@@ -99,16 +99,34 @@ private:
     // Initialize systems and attatch them to the ECS world
     void initFlecsSystems();
 
+    // Player system
+    //--------------------------
     // Get input from player
     void PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player);
     float player_vert_progress; // Player Vertical Progress
-
     Vector2i getPlayerPos();
+
+    // Particle system
+    //--------------------------
+    std::vector<plt::ParticleBit> particle_vec;
+
+    // Update all particles and delete ones that are done
+    void ParticleSystem();
+
+    // Updates a falling particle, returns true if particle is done
+    bool updateParticle(plt::ParticleBit *particle);
+    void createParticlesInCell(Vector2i cell, float fall_speed, Color col, float density);
+    void createParticlesOnCellEdge(Vector2i cell, Direction edge, float fall_speed, Color col, float density);
+
+    // Map system
+    //--------------------------
 
     // Map position system
     void MapPosSystem();
     Rectangle map_dest;
 
+    // Render system
+    //--------------------------
     // Render the world after all updates
     void RenderSystem();
 
@@ -120,8 +138,6 @@ private:
 
     // Check what type of entity is at the specified location
     GridVal gridCheck(Vector2i pos);
-
-    bool print_grid;
 
 public:
     App(RenderTexture2D target);

@@ -159,6 +159,14 @@ void App::initFlecsSystems()
                                                 MapPosSystem(); //
                                             });
 
+    flecs::system part_system = ecs_world->system()
+                                    .kind(flecs::PostUpdate)
+                                    .run([&](flecs::iter &it)
+                                         {
+                                             // Update where the map should be drawn
+                                             ParticleSystem(); //
+                                         });
+
     flecs::system render_system = ecs_world->system()
                                       .kind(flecs::PostUpdate)
                                       .run([&](flecs::iter &it)
@@ -318,6 +326,17 @@ GridVal App::gridCheck(Vector2i pos)
     return (GridVal)object_map[pos.x][pos.y];
 }
 
+// Returns which cell the player is in
+Vector2i App::getPlayerPos()
+{
+    for (int i = 0; i < object_map.size(); i++)
+        for (int j = 0; j < object_map[i].size(); j++)
+            if (object_map[i][j] == GridVal_Player)
+                return {i, j};
+
+    return {-1, -1};
+}
+
 // FLECS Systems
 // ======================================================================================
 
@@ -335,6 +354,13 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
             player.move_state = plt::PlayerMvnmtState_Left;
         if (IsKeyDown(KEY_D))
             player.move_state = plt::PlayerMvnmtState_Right;
+        if (IsKeyDown(KEY_R))
+        {
+            object_map = object_checkp_map;
+            Vector2i player_pos = getPlayerPos();
+            pos = {player_pos.x, player_pos.y};
+            return;
+        }
     }
 
     // If the player isn't moving, we're done
@@ -373,6 +399,8 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
         // Hit a damage block
     case GridVal_Damage:
     {
+        // Create blood
+        createParticlesInCell({mov_info.final_pos.x, mov_info.final_pos.y}, 0.3, RED, 0.3);
         object_map = object_checkp_map;
         Vector2i player_pos = getPlayerPos();
         pos = {player_pos.x, player_pos.y};
@@ -380,6 +408,7 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
         // Play jumping sound
         if (is_audio_initialized)
             PlaySound(jump_sound);
+
         return;
     }
     break;
@@ -416,17 +445,6 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
 
     // Calculate player progress
     player_vert_progress = (float)pos.y / (float)object_map.back().size();
-}
-
-// Returns which cell the player is in
-Vector2i App::getPlayerPos()
-{
-    for (int i = 0; i < object_map.size(); i++)
-        for (int j = 0; j < object_map[i].size(); j++)
-            if (object_map[i][j] == GridVal_Player)
-                return {i, j};
-
-    return {-1, -1};
 }
 
 // Handle the map's position on the screen
@@ -472,8 +490,54 @@ void App::MapPosSystem()
     map_dest.y += (ideal_map_pos.y - map_dest.y) * 0.01 * dist_to_ideal * ecs_world->delta_time();
 }
 
+// Update all particles and delete ones that are done
+void App::ParticleSystem()
+{
+    std::vector<plt::ParticleBit>::iterator iter;
+    for (iter = particle_vec.begin(); iter != particle_vec.end();)
+    {
+        if (updateParticle(&(*iter)))
+            iter = particle_vec.erase(iter);
+        else
+            ++iter;
+    }
+}
+
+// Updates a falling particle, returns true if particle is done
+bool App::updateParticle(plt::ParticleBit *particle)
+{
+    particle->pos.y += particle->fall_speed * ecs_world->delta_time();
+
+    if (particle->pos.y >= 1.2 * screen_h)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+void App::createParticlesInCell(Vector2i cell, float fall_speed, Color col, float density)
+{
+    int part_count = (int)(density * 100.0);
+
+    for (int i = 0; i < part_count; i++)
+    {
+        plt::ParticleBit new_particle;
+        new_particle.col = col;
+        new_particle.fall_speed = 0.1;
+
+        new_particle.pos.x = map_dest.x + (float)(cell.x / object_map.size()) * map_dest.width;
+        new_particle.pos.y = map_dest.y + (float)(cell.y / object_map.back().size()) * map_dest.height;
+
+        particle_vec.push_back(new_particle);
+    }
+}
+
+void App::createParticlesOnCellEdge(Vector2i cell, Direction edge, float fall_speed, Color col, float density)
+{
+}
+
 // Render system (onto render texture)
-// --------------------------------------------------------------------------------------
 void App::RenderSystem()
 {
     // Pre-draw
@@ -546,6 +610,15 @@ void App::RenderSystem()
     {
     }
     break;
+    }
+
+    for (int i = 0; i < particle_vec.size(); i++)
+    {
+        DrawRectangle(particle_vec[i].pos.x - 1,
+                      particle_vec[i].pos.y - 1,
+                      2,
+                      2,
+                      particle_vec[i].col);
     }
 
     EndTextureMode();

@@ -45,4 +45,12 @@ namespace plt
         GameMusic_MainMenu,
         GameMusic_Climax,
     };
+
+    // Particle effect
+    struct ParticleBit
+    {
+        Vector2 pos;
+        Color col;
+        float fall_speed;
+    };
 }
