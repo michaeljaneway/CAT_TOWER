@@ -36,7 +36,8 @@ namespace plt
     enum GameState
     {
         GameState_MainMenu,
-        GameState_Playing
+        GameState_Playing,
+        GameState_Win,
     };
 
     enum GameMusic : uint8_t

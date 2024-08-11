@@ -19,12 +19,9 @@ private:
 
     // Grid-based Map
     //--------------------------------------------------------------------------------------
-    // Legend:
-    // 0    - empty
-    // 1    - player
-    // 2    - solid block
     std::vector<std::vector<uint8_t>> object_map;
-
+    std::vector<std::vector<uint8_t>> object_checkp_map;
+    std::vector<std::vector<uint8_t>> object_reset_map;
     // Set screen w and h
     float screen_w;
     float screen_h;
@@ -105,6 +102,8 @@ private:
     // Get input from player
     void PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player);
     float player_vert_progress; // Player Vertical Progress
+
+    Vector2i getPlayerPos();
 
     // Map position system
     void MapPosSystem();

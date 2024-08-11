@@ -54,7 +54,10 @@ enum GridVal : uint8_t
 {
     GridVal_Empty,
     GridVal_Player,
-    GridVal_SolidBlock
+    GridVal_SolidBlock,
+    GridVal_Damage,
+    GridVal_CheckP,
+    GridVal_Finish
 };
 
 enum Direction : uint8_t

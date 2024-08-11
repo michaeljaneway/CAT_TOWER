@@ -58,6 +58,11 @@ App::App(RenderTexture2D target)
     map_dest.height = map_tex.texture.width * 4;
     map_dest.x = screen_w / 2 - map_dest.width / 2;
     map_dest.y = (-map_dest.height) + 20;
+    player_vert_progress = 0.f;
+
+    // Set first chekpoint and reset maps now
+    object_checkp_map = object_map;
+    object_reset_map = object_map;
 
     // Load game textures
     //--------------------------------------------------------------------------------------
@@ -360,22 +365,42 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
     MoveInfo mov_info;
     mov_info = infGridMove({pos.x, pos.y}, desired_dir);
 
-    // Shunt the screen
-    switch (player.move_state)
+    // After moving, player is back to idle
+    player.move_state = plt::PlayerMvnmtState_Idle;
+
+    switch (mov_info.blocked_by)
     {
-    case plt::PlayerMvnmtState_Up:
-    case plt::PlayerMvnmtState_Down:
-        map_dest.y += (mov_info.final_pos.y - pos.y) * 2.f;
-        break;
-    case plt::PlayerMvnmtState_Left:
-    case plt::PlayerMvnmtState_Right:
-        map_dest.x += (mov_info.final_pos.x - pos.x) * 2.f;
-        break;
+        // Hit a damage block
+    case GridVal_Damage:
+    {
+        object_map = object_checkp_map;
+        Vector2i player_pos = getPlayerPos();
+        pos = {player_pos.x, player_pos.y};
+
+        // Play jumping sound
+        if (is_audio_initialized)
+            PlaySound(jump_sound);
+        return;
+    }
+    break;
+
+        // Hit a checkpoint
+    case GridVal_CheckP:
+    {
+        object_checkp_map = object_map;
+    }
+    break;
+
+        // Hit the finish
+    case GridVal_Finish:
+    {
+        game_state = plt::GameState_Win;
+    }
+    break;
+
     default:
         break;
     }
-
-    player.move_state = plt::PlayerMvnmtState_Idle;
 
     // Return if we didn't actually move anywhere
     if (pos.x == mov_info.final_pos.x && pos.y == mov_info.final_pos.y)
@@ -385,11 +410,23 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
     if (is_audio_initialized)
         PlaySound(jump_sound);
 
+    // Set new position
     pos.x = mov_info.final_pos.x;
     pos.y = mov_info.final_pos.y;
 
     // Calculate player progress
-    float player_vert_progress = (float)pos.y / (float)object_map.back().size();
+    player_vert_progress = (float)pos.y / (float)object_map.back().size();
+}
+
+// Returns which cell the player is in
+Vector2i App::getPlayerPos()
+{
+    for (int i = 0; i < object_map.size(); i++)
+        for (int j = 0; j < object_map[i].size(); j++)
+            if (object_map[i][j] == GridVal_Player)
+                return {i, j};
+
+    return {-1, -1};
 }
 
 // Handle the map's position on the screen
@@ -403,7 +440,7 @@ void App::MapPosSystem()
 
     // Destination w and h stay the same
     map_dest.width = map_tex.texture.width * 4;
-    map_dest.height = map_tex.texture.width * 4;
+    map_dest.height = map_tex.texture.height * 4;
 
     // Determine ideal vertical map position on the screen
     // --------------------------------------------------------------------------------------
@@ -481,22 +518,20 @@ void App::RenderSystem()
     {
         // Title
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-        GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "AARON SMELLS");
+        GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "Cat Tower");
         setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-        GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "AARON SMELLS");
+        GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "Cat Tower");
 
+        // Play Button
         setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
-        if (GuiButton(Rectangle{screen_w * 0.25f, 400, screen_w - (screen_w * 0.5f), 50}, "PLAY"))
-        {
+        if (GuiButton(Rectangle{screen_w * 0.25f, 400, screen_w - (screen_w * 0.5f), 100}, "PLAY"))
             game_state = plt::GameState_Playing;
-        }
     }
     break;
     case plt::GameState_Playing:
     {
         // Speedrun time counter
         // --------------------------------------------------------------------------------------
-
         time_counter += ecs_world->delta_time();
 
         std::stringstream speedrun_stream;
@@ -506,6 +541,9 @@ void App::RenderSystem()
         GuiLabel({10 + 1, screen_h - 40.f + 1, 200, 40}, speedrun_stream.str().c_str());
         setGuiTextStyle(lookout_font, ColorToInt(WHITE), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 28, 30);
         GuiLabel({10, screen_h - 40.f, 200, 40}, speedrun_stream.str().c_str());
+    }
+    case plt::GameState_Win:
+    {
     }
     break;
     }
