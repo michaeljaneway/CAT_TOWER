@@ -55,8 +55,8 @@ App::App(RenderTexture2D target)
 
     // Destination w and h stay the same
     RenderTexture2D map_tex = map->getRenderTexture();
-    map_dest.width = map_tex.texture.width * 4.f;
-    map_dest.height = map_tex.texture.height * 4.f;
+    map_dest.width = map_tex.texture.width * 3.f;
+    map_dest.height = map_tex.texture.height * 3.f;
 
     map_dest.x = screen_w / 2 - map_dest.width / 2;
     map_dest.y = -map_dest.height;
@@ -112,6 +112,7 @@ App::App(RenderTexture2D target)
 
     // Load the default texture
     loadTexFromImg("[v1.3] tranquil_tunnels_transparent.png", &ttt_tex);
+    loadTexFromImg("cat.png", &cat_tex);
 }
 
 // Destructor
@@ -155,7 +156,7 @@ void App::initFlecsSystems()
                                    .run([&](flecs::iter &it)
                                         {
                                             // Update the map
-                                            map->update(player_orient, ttt_tex); //
+                                            map->update(player_orient, cat_tex); //
                                         });
 
     flecs::system map_pos_system = ecs_world->system()
@@ -196,9 +197,6 @@ void App::gameReset()
 
     // Reset timer
     time_counter = 0.0;
-
-    // Set game state
-    game_state = plt::GameState_Playing;
 }
 
 // App update
@@ -235,26 +233,32 @@ void App::handleGameMusic()
         is_audio_initialized = true;
 
         jump_sound = LoadSound("Jump 1.wav");
+        SetSoundVolume(jump_sound, 0.4);
+
+        cat_sound = LoadSound("Cat 1.wav");
+        SetSoundVolume(cat_sound, 0.4);
 
         // Add the music in order with plt::GameMusic enum
-        game_music.push_back(LoadMusicStream("music/racing_game_menu_bpm165.mp3"));
-        SetMusicVolume(game_music.back(), 0.4);
+        game_music[plt::GameMusic_MainMenu] = LoadMusicStream("music/racing_game_menu_bpm165.mp3");
+        SetMusicVolume(game_music[plt::GameMusic_MainMenu], 0.4);
 
-        game_music.push_back(LoadMusicStream("music/fever_stadium_bpm165.mp3"));
-        SetMusicVolume(game_music.back(), 0.4);
+        game_music[plt::GameMusic_Playing] = LoadMusicStream("music/fever_stadium_bpm165.mp3");
+        SetMusicVolume(game_music[plt::GameMusic_Playing], 0.4);
 
-        game_music.push_back(LoadMusicStream("music/fever_stadium_climax_bpm180.mp3"));
-        SetMusicVolume(game_music.back(), 0.4);
+        game_music[plt::GameMusic_Climax] = LoadMusicStream("music/fever_stadium_climax_bpm180.mp3");
+        SetMusicVolume(game_music[plt::GameMusic_Climax], 0.4);
 
-        game_music.push_back(LoadMusicStream("music/short_IMP.mp3"));
-        SetMusicVolume(game_music.back(), 0.4);
+        game_music[plt::GameMusic_Win] = LoadMusicStream("music/short_IMP.mp3");
+        SetMusicVolume(game_music[plt::GameMusic_Win], 0.4);
     }
 
     switch (game_state)
     {
     case plt::GameState_MainMenu:
+    {
         playGameMusic(game_music[plt::GameMusic_MainMenu]);
-        break;
+    }
+    break;
 
     case plt::GameState_Playing:
     {
@@ -267,9 +271,11 @@ void App::handleGameMusic()
             playGameMusic(game_music[plt::GameMusic_Playing]);
         }
     }
+    break;
+
     case plt::GameState_Win:
     {
-        playGameMusic(game_music[plt::GameState_Win]);
+        playGameMusic(game_music[plt::GameMusic_Win]);
     }
     break;
 
@@ -289,8 +295,8 @@ void App::playGameMusic(Music &mus)
     {
         // Pause the playing music track
         for (auto &track : game_music)
-            if (IsMusicStreamPlaying(track))
-                StopMusicStream(track);
+            if (IsMusicStreamPlaying(track.second))
+                StopMusicStream(track.second);
 
         // Start playing the new song
         PlayMusicStream(mus);
@@ -412,6 +418,7 @@ void App::PlayerSystem(flecs::entity e, plt::Player &player)
         if (IsKeyDown(KEY_R))
         {
             object_map = object_checkp_map;
+            player_orient = player_checkp_orient;
             return;
         }
     }
@@ -461,12 +468,10 @@ void App::PlayerSystem(flecs::entity e, plt::Player &player)
         // createParticlesInCell({mov_info.final_pos.x, mov_info.final_pos.y}, 0.3, RED, 250.5);
         object_map = object_checkp_map;
         player_orient = player_checkp_orient;
-        Vector2i player_pos = getPlayerPos();
-        pos = {player_pos.x, player_pos.y};
 
         // Play jumping sound
         if (is_audio_initialized)
-            PlaySound(jump_sound);
+            PlaySound(cat_sound);
 
         return;
     }
@@ -514,8 +519,8 @@ void App::MapPosSystem()
     RenderTexture2D map_tex = map->getRenderTexture();
 
     // Destination w and h stay the same
-    map_dest.width = map_tex.texture.width * 4.f;
-    map_dest.height = map_tex.texture.height * 4.f;
+    map_dest.width = map_tex.texture.width * 2.5f;
+    map_dest.height = map_tex.texture.height * 2.5f;
 
     // It will always be ideal to have the map horz. centered on the screen
     ideal_map_pos.x = screen_w / 2 - map_dest.width / 2;
@@ -637,9 +642,9 @@ void App::RenderSystem()
     {
         // Title
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 150, 17);
-        GuiLabel(Rectangle{40 + 5, 30 + 5, screen_w - 80, 150}, "Cat Tower");
+        GuiLabel(Rectangle{40 + 5, 30 + 5, screen_w - 80, 150}, "Dragon Tower");
         setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 150, 17);
-        GuiLabel(Rectangle{40, 30, screen_w - 80, 150}, "Cat Tower");
+        GuiLabel(Rectangle{40, 30, screen_w - 80, 150}, "Dragon Tower");
 
         // Title
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
@@ -661,9 +666,9 @@ void App::RenderSystem()
         setGuiTextStyle(absolute_font, ColorToInt(BLUE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
         GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 0.f), 350, screen_w * 0.3f, 50}, "slide");
 
-        // Draw Checkpoint
-        DrawTexturePro(ttt_tex,
-                       Rectangle{1000, 664, 8, 8},
+        // Draw Cat
+        DrawTexturePro(cat_tex,
+                       Rectangle{0, 0, 8, 8},
                        Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 0.f) + 125 + 5,
                                  420 + 5,
                                  screen_w * 0.1f,
@@ -671,8 +676,8 @@ void App::RenderSystem()
                        {0, 0},
                        0.0,
                        BLACK);
-        DrawTexturePro(ttt_tex,
-                       Rectangle{1000, 664, 8, 8},
+        DrawTexturePro(cat_tex,
+                       Rectangle{0, 0, 8, 8},
                        Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 0.f) + 125,
                                  420,
                                  screen_w * 0.1f,
@@ -754,6 +759,13 @@ void App::RenderSystem()
         GuiLabel({50 + 1, screen_h - 100.f + 1, 200, 40}, speedrun_stream.str().c_str());
         setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
         GuiLabel({50, screen_h - 100.f, 200, 40}, speedrun_stream.str().c_str());
+
+        setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+        if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
+        {
+            game_state = plt::GameState_MainMenu;
+            gameReset();
+        }
     }
     break;
     case plt::GameState_Win:
@@ -779,7 +791,17 @@ void App::RenderSystem()
         setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
 
         if (GuiButton(Rectangle{screen_w * 0.25f, 400, screen_w - (screen_w * 0.5f), 100}, "RESTART"))
+        {
             gameReset();
+            game_state = plt::GameState_Playing;
+        }
+
+        setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+        if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
+        {
+            game_state = plt::GameState_MainMenu;
+            gameReset();
+        }
     }
     break;
     }
