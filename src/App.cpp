@@ -1,35 +1,15 @@
 #include <App.hpp>
 
-void processLoopingEase(plt::LoopingEase &le, float dt)
-{
-    le.cur_time_left -= dt;
-
-    if (le.cur_time_left < 0)
-    {
-        le.cur_time_left = le.set_time;
-        le.increasing = !le.increasing;
-    }
-
-    easingFunction ease_func = getEasingFunction(le.func);
-    float percentage = 1.0 - (le.cur_time_left / le.set_time);
-    float progress = ease_func(percentage);
-
-    if (le.increasing)
-        le.val = Lerp(le.min_val, le.max_val, progress);
-    else
-        le.val = Lerp(le.max_val, le.min_val, progress);
-}
-
 // App Initialization & Destruction
 // ==================================================
+
+// Constructor
 App::App(RenderTexture2D target)
 {
     // Set screen w and h
     this->target = target;
     this->screen_w = target.texture.width;
     this->screen_h = target.texture.height;
-
-    map_pos_offset = {0.0, 0.0};
 
     // Timing initialization
     //--------------------------------------------------------------------------------------
@@ -55,11 +35,6 @@ App::App(RenderTexture2D target)
     fear_font = LoadFontEx("fonts/Fear 11.ttf", 128, 0, 250);
     absolute_font = LoadFontEx("fonts/Absolute 10.ttf", 128, 0, 250);
 
-    // Easings
-    //--------------------------------------------------------------------------------------
-    map_x_ease = {0.0, 20, 20, true, -1, 1, EaseInOutCubic};
-    map_y_ease = {0.0, 10, 10, true, -1, 1, EaseInOutCubic};
-
     // Initialize gamestate
     //--------------------------------------------------------------------------------------
 
@@ -76,6 +51,18 @@ App::App(RenderTexture2D target)
     //--------------------------------------------------------------------------------------
 
     map = std::make_unique<Map>(ecs_world.get(), &object_map);
+
+    // Destination w and h stay the same
+    RenderTexture2D map_tex = map->getRenderTexture();
+    map_dest.width = map_tex.texture.width * 4;
+    map_dest.height = map_tex.texture.width * 4;
+    map_dest.x = screen_w / 2 - map_dest.width / 2;
+    map_dest.y = (-map_dest.height) + 20;
+    player_vert_progress = 0.f;
+
+    // Set first chekpoint and reset maps now
+    object_checkp_map = object_map;
+    object_reset_map = object_map;
 
     // Load game textures
     //--------------------------------------------------------------------------------------
@@ -120,6 +107,7 @@ App::App(RenderTexture2D target)
     // loadTexFromImg("def.png", &def_tex);
 }
 
+// Destructor
 App::~App()
 {
     // Shaders
@@ -137,6 +125,7 @@ App::~App()
     }
 }
 
+// Load texture from an image
 void App::loadTexFromImg(std::string img_file, Texture2D *tex)
 {
     Image img = LoadImage(img_file.c_str());
@@ -144,25 +133,7 @@ void App::loadTexFromImg(std::string img_file, Texture2D *tex)
     UnloadImage(img);
 }
 
-void App::update()
-{
-    // Handle game music as often as possible to avoid audio clipping
-    handleGameMusic();
-
-    // Only progress world 60 times per sec (60 fps)
-    std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
-    std::chrono::duration<double, std::milli> work_time = time_now - last_frame;
-
-    if (work_time.count() >= 16.67)
-    {
-        // Update last frame time to now
-        last_frame = std::chrono::system_clock::now();
-
-        // Progress FLECS world
-        ecs_world->progress();
-    }
-}
-
+// Initialize all Flecs systems
 void App::initFlecsSystems()
 {
     flecs::system player_system = ecs_world->system<plt::Position, plt::Player>()
@@ -179,6 +150,15 @@ void App::initFlecsSystems()
                                             // Update the map
                                             map->update(); //
                                         });
+
+    flecs::system map_pos_system = ecs_world->system()
+                                       .kind(flecs::PostUpdate)
+                                       .run([&](flecs::iter &it)
+                                            {
+                                                // Update where the map should be drawn
+                                                MapPosSystem(); //
+                                            });
+
     flecs::system render_system = ecs_world->system()
                                       .kind(flecs::PostUpdate)
                                       .run([&](flecs::iter &it)
@@ -187,11 +167,32 @@ void App::initFlecsSystems()
                                            });
 }
 
+// App update
+// ======================================================================================
+
+void App::update()
+{
+    // Only progress world 60 times per sec (60 fps)
+    std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
+    std::chrono::duration<double, std::milli> work_time = time_now - last_frame;
+
+    if (work_time.count() >= 16.67)
+    {
+        // Update last frame time to now
+        last_frame = std::chrono::system_clock::now();
+
+        // Progress FLECS world
+        ecs_world->progress();
+    }
+
+    // Handle game music as often as possible to avoid audio clipping
+    handleGameMusic();
+}
+
 // Game Audio
 // ======================================================================================
 
 // Handles switching between game music based on game state
-// --------------------------------------------------------------------------------------
 void App::handleGameMusic()
 {
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && !is_audio_initialized)
@@ -201,23 +202,23 @@ void App::handleGameMusic()
 
         jump_sound = LoadSound("Jump 1.wav");
 
-        // // Add the music
-        // game_music.push_back(LoadMusicStream("music/jazzfunk.mp3"));
-        // game_music.push_back(LoadMusicStream("music/nokia.mp3"));
-        // game_music.push_back(LoadMusicStream("music/dance1.mp3"));
-        // game_music.push_back(LoadMusicStream("music/churchcombat.mp3"));
-
-        // game_music.push_back(LoadMusicStream("music/devil.mp3"));
-        // SetMusicVolume(game_music.back(), 0.7);
-
-        // game_music.push_back(LoadMusicStream("music/New Sunrise.mp3"));
+        // Add the music
+        game_music.push_back(LoadMusicStream("music/fever_stadium_bpm165.mp3"));
+        SetMusicVolume(game_music.back(), 0.4);
+        game_music.push_back(LoadMusicStream("music/fever_stadium_climax_bpm180.mp3"));
+        SetMusicVolume(game_music.back(), 0.4);
     }
 
     switch (game_state)
     {
     case plt::GameState_MainMenu:
-        // playGameMusic(game_music[plt::GameMusic_MainMenu]);
+        playGameMusic(game_music[plt::GameMusic_MainMenu]);
         break;
+
+    case plt::GameState_Playing:
+    {
+    }
+    break;
 
     default:
         break;
@@ -225,7 +226,6 @@ void App::handleGameMusic()
 }
 
 // Plays a specific music
-// --------------------------------------------------------------------------------------
 void App::playGameMusic(Music &mus)
 {
     // Return if the audio device is not ready
@@ -250,6 +250,8 @@ void App::playGameMusic(Music &mus)
 
 // Grid Handling
 // ======================================================================================
+
+// Moves an entity at pos by mov, then returns if the movement was successful (ie. not blocked)
 bool App::gridMove(Vector2i pos, Vector2i mov)
 {
     // Return false if value is out of range
@@ -271,6 +273,7 @@ bool App::gridMove(Vector2i pos, Vector2i mov)
     }
 }
 
+// Move in a specified direction infinitely until blocked, returning the info of where it stopped and what it was blocked by
 MoveInfo App::infGridMove(Vector2i pos, Direction dir)
 {
     // Determine which direction to move in
@@ -315,8 +318,13 @@ GridVal App::gridCheck(Vector2i pos)
     return (GridVal)object_map[pos.x][pos.y];
 }
 
+// FLECS Systems
+// ======================================================================================
+
+// Handle the player
 void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
 {
+    // Player Input
     if (player.move_state == plt::PlayerMvnmtState_Idle)
     {
         if (IsKeyDown(KEY_W))
@@ -353,10 +361,46 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
         break;
     }
 
+    // Move
     MoveInfo mov_info;
     mov_info = infGridMove({pos.x, pos.y}, desired_dir);
 
+    // After moving, player is back to idle
     player.move_state = plt::PlayerMvnmtState_Idle;
+
+    switch (mov_info.blocked_by)
+    {
+        // Hit a damage block
+    case GridVal_Damage:
+    {
+        object_map = object_checkp_map;
+        Vector2i player_pos = getPlayerPos();
+        pos = {player_pos.x, player_pos.y};
+
+        // Play jumping sound
+        if (is_audio_initialized)
+            PlaySound(jump_sound);
+        return;
+    }
+    break;
+
+        // Hit a checkpoint
+    case GridVal_CheckP:
+    {
+        object_checkp_map = object_map;
+    }
+    break;
+
+        // Hit the finish
+    case GridVal_Finish:
+    {
+        game_state = plt::GameState_Win;
+    }
+    break;
+
+    default:
+        break;
+    }
 
     // Return if we didn't actually move anywhere
     if (pos.x == mov_info.final_pos.x && pos.y == mov_info.final_pos.y)
@@ -366,8 +410,66 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
     if (is_audio_initialized)
         PlaySound(jump_sound);
 
+    // Set new position
     pos.x = mov_info.final_pos.x;
     pos.y = mov_info.final_pos.y;
+
+    // Calculate player progress
+    player_vert_progress = (float)pos.y / (float)object_map.back().size();
+}
+
+// Returns which cell the player is in
+Vector2i App::getPlayerPos()
+{
+    for (int i = 0; i < object_map.size(); i++)
+        for (int j = 0; j < object_map[i].size(); j++)
+            if (object_map[i][j] == GridVal_Player)
+                return {i, j};
+
+    return {-1, -1};
+}
+
+// Handle the map's position on the screen
+void App::MapPosSystem()
+{
+    Vector2 ideal_map_pos;
+    RenderTexture2D map_tex = map->getRenderTexture();
+
+    // It will always be ideal to have the map horz. centered on the screen
+    ideal_map_pos.x = screen_w / 2 - map_dest.width / 2;
+
+    // Destination w and h stay the same
+    map_dest.width = map_tex.texture.width * 4;
+    map_dest.height = map_tex.texture.height * 4;
+
+    // Determine ideal vertical map position on the screen
+    // --------------------------------------------------------------------------------------
+    switch (game_state)
+    {
+    // In main menu, let just a bit of the map peak out of the top
+    case plt::GameState_MainMenu:
+    {
+        ideal_map_pos.y = (-map_dest.height) + 20;
+    }
+    break;
+
+    // While playing, try to vertically center on the player
+    case plt::GameState_Playing:
+    {
+        ideal_map_pos.y = screen_h / 2.0 - (map_dest.height) * (player_vert_progress);
+    }
+    break;
+    default:
+        break;
+    }
+
+    // Move current_pos towards ideal_map_pos
+    // --------------------------------------------------------------------------------------
+
+    float dist_to_ideal = abs(Vector2Distance({map_dest.x, map_dest.y}, ideal_map_pos));
+
+    map_dest.x += (ideal_map_pos.x - map_dest.x) * 0.01 * dist_to_ideal * ecs_world->delta_time();
+    map_dest.y += (ideal_map_pos.y - map_dest.y) * 0.01 * dist_to_ideal * ecs_world->delta_time();
 }
 
 // Render system (onto render texture)
@@ -375,17 +477,15 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
 void App::RenderSystem()
 {
     // Pre-draw
+    // -------------------------------------------------------------------------------------
+
+    // Calculate map render texture destination
     // --------------------------------------------------------------------------------------
-
-    processLoopingEase(map_x_ease, ecs_world->delta_time());
-    processLoopingEase(map_y_ease, ecs_world->delta_time());
-
-    map_pos_offset.x += map_x_ease.val * 0.15;
-    map_pos_offset.y += map_y_ease.val * 0.15;
+    RenderTexture2D map_tex = map->getRenderTexture();
+    Rectangle map_src = {0, 0, (float)map_tex.texture.width, (float)-map_tex.texture.height};
 
     // Begin rendering to the application texture
     BeginTextureMode(target);
-
     ClearBackground(RAYWHITE);
 
     // Balatro Shader
@@ -395,34 +495,13 @@ void App::RenderSystem()
     DrawTexture(bal_texture.texture, 0, 0, ColorAlpha(WHITE, 0.1));
     EndShaderMode();
 
-    // Speedrun time counter
+    // Draw map shadow and map
     // --------------------------------------------------------------------------------------
 
-    time_counter += ecs_world->delta_time();
-
-    std::stringstream speedrun_stream;
-    speedrun_stream << std::fixed << std::setprecision(2) << time_counter;
-
-    setGuiTextStyle(lookout_font, ColorToInt(BLACK), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 28, 30);
-    GuiLabel({10 + 1, screen_h - 40.f + 1, 200, 40}, speedrun_stream.str().c_str());
-    setGuiTextStyle(lookout_font, ColorToInt(WHITE), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 28, 30);
-    GuiLabel({10, screen_h - 40.f, 200, 40}, speedrun_stream.str().c_str());
-
-    // Render the map to the screen
-    RenderTexture2D map_tex = map->getRenderTexture();
-
-    Rectangle map_src = {0, 0, (float)map_tex.texture.width, (float)-map_tex.texture.height};
-
-    Rectangle map_dest;
-    map_dest.width = map_tex.texture.width * 4;
-    map_dest.height = map_tex.texture.width * 4;
-
-    // Determine x,y based on the calculated w,h
-    map_dest.x = floor(screen_w / 2 - map_dest.width / 2 + map_pos_offset.x);
-    map_dest.y = floor(screen_h / 2 - map_dest.height / 2 + map_pos_offset.y);
-
+    // Draw map shadow
     DrawRectangleRec(Rectangle{map_dest.x + 5, map_dest.y + 5, map_dest.width, map_dest.height}, BLACK);
 
+    // Draw map
     DrawTexturePro(map_tex.texture,
                    map_src,
                    map_dest,
@@ -430,15 +509,44 @@ void App::RenderSystem()
                    0.0,
                    WHITE);
 
-    // setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-    // GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "AARON SMELLS");
-    // setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-    // GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "AARON SMELLS");
+    // Draw GUI
+    // --------------------------------------------------------------------------------------
 
-    // setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-    // GuiLabel(Rectangle{40 + 5, 450 + 5, screen_w - 80, 200}, "LIKE FLOWERS");
-    // setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-    // GuiLabel(Rectangle{40, 450, screen_w - 80, 200}, "LIKE FLOWERS");
+    switch (game_state)
+    {
+    case plt::GameState_MainMenu:
+    {
+        // Title
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "Cat Tower");
+        setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "Cat Tower");
+
+        // Play Button
+        setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+        if (GuiButton(Rectangle{screen_w * 0.25f, 400, screen_w - (screen_w * 0.5f), 100}, "PLAY"))
+            game_state = plt::GameState_Playing;
+    }
+    break;
+    case plt::GameState_Playing:
+    {
+        // Speedrun time counter
+        // --------------------------------------------------------------------------------------
+        time_counter += ecs_world->delta_time();
+
+        std::stringstream speedrun_stream;
+        speedrun_stream << std::fixed << std::setprecision(2) << time_counter;
+
+        setGuiTextStyle(lookout_font, ColorToInt(BLACK), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 28, 30);
+        GuiLabel({10 + 1, screen_h - 40.f + 1, 200, 40}, speedrun_stream.str().c_str());
+        setGuiTextStyle(lookout_font, ColorToInt(WHITE), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 28, 30);
+        GuiLabel({10, screen_h - 40.f, 200, 40}, speedrun_stream.str().c_str());
+    }
+    case plt::GameState_Win:
+    {
+    }
+    break;
+    }
 
     EndTextureMode();
 }

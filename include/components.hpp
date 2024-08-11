@@ -35,26 +35,14 @@ namespace plt
 
     enum GameState
     {
-        GameState_MainMenu
+        GameState_MainMenu,
+        GameState_Playing,
+        GameState_Win,
     };
 
     enum GameMusic : uint8_t
     {
-        GameMusic_MainMenu
-    };
-
-    struct LoopingEase
-    {
-        float val;
-
-        float set_time;
-        float cur_time_left;
-
-        bool increasing;
-
-        float min_val;
-        float max_val;
-
-        easing_functions func;
+        GameMusic_MainMenu,
+        GameMusic_Climax,
     };
 }

@@ -54,7 +54,10 @@ enum GridVal : uint8_t
 {
     GridVal_Empty,
     GridVal_Player,
-    GridVal_SolidBlock
+    GridVal_SolidBlock,
+    GridVal_Damage,
+    GridVal_CheckP,
+    GridVal_Finish
 };
 
 enum Direction : uint8_t
@@ -75,10 +78,6 @@ struct MoveInfo
     Vector2i final_pos;
     GridVal blocked_by;
 };
-
-
-// Include easing library
-#include "easing.h"
 
 // Random small classes/functions
 #include "util.hpp"

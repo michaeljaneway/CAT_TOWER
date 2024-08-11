@@ -13,11 +13,19 @@
         },
         "realtestmap.tmx": {
             "scale": 4,
-            "selectedLayer": 2,
+            "selectedLayer": 1,
             "viewCenter": {
+<<<<<<< HEAD
                 "x": 37,
                 "y": 55.125
+=======
+                "x": 93.875,
+                "y": 54.75
+>>>>>>> 4ba473fddb9e316bfd68d6b932c049a62e583825
             }
+        },
+        "realtestmap.tmx#alienscape_tileset_transparent": {
+            "scaleInDock": 3
         },
         "realtestmap.tmx#tranquiltunnels": {
             "scaleInDock": 1

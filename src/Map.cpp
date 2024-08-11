@@ -1,8 +1,5 @@
 #include "Map.hpp"
 
-// Start
-//--------------------------------------------------------------------------------------
-
 // Constructor
 Map::Map(flecs::world *ecs_world, std::vector<std::vector<uint8_t>> *object_map)
 {
@@ -113,6 +110,18 @@ void Map::parseTileLayer(cute_tiled_layer_t *layer)
             // Get the tile num for the tile on this layer
             int tile_data = data[map_w * row + column];
 
+            // Rotation flags
+            const int FlippedHorizontallyFlag = 0x8000'0000;
+            const int FlippedVerticallyFlag = 0x4000'0000;
+            const int FlippedAntiDiagonallyFlag = 0x2000'0000;
+
+            // Get the flags
+            int tile_flags = tile_data & 0xF000'0000;
+
+            // Get the tile data without the flags
+            tile_data = tile_data & 0x0FFF'FFFF;
+
+            // We're done if the tile is empty
             if (tile_data == 0)
                 continue;
 
@@ -133,11 +142,17 @@ void Map::parseTileLayer(cute_tiled_layer_t *layer)
                                   (float)tile_w,
                                   (float)tile_h};
 
-            Vector2 dest_pos = {(float)column * tile_w, (float)row * tile_h};
+            if (FlippedHorizontallyFlag & tile_flags)
+                src_rect.width *= -1;
+
+            if (FlippedVerticallyFlag & tile_flags)
+                src_rect.height *= -1;
+
+            Rectangle dest_rect = {(float)column * tile_w, (float)row * tile_h, (float)tile_w, (float)tile_h};
 
             // Draw to the rendertexture
             BeginTextureMode(layer_info.tex);
-            DrawTextureRec(this_tile_info->tex, src_rect, dest_pos, WHITE);
+            DrawTexturePro(this_tile_info->tex, src_rect, dest_rect, {0.f, 0.f}, 0.0, WHITE);
             EndTextureMode();
         }
     }
@@ -189,6 +204,60 @@ void Map::parseObjLayer(cute_tiled_layer_t *layer)
             layer_obj = layer_obj->next;
         }
     }
+
+    // Add damage
+    // --------------------------------------------------------------------------------------
+    else if (std::string("Damage") == layer->name.ptr)
+    {
+        cute_tiled_object_t *layer_obj = layer->objects;
+
+        // Iterate over each collider object
+        while (layer_obj)
+        {
+            // Set all of the grid spaces within the collider to damage cell
+            for (float temp_w = 0; temp_w < layer_obj->width; temp_w += tile_w)
+                for (float temp_h = 0; temp_h < layer_obj->height; temp_h += tile_h)
+                    (*object_map)[int((layer_obj->x + temp_w) / 8)][int((layer_obj->y + temp_h) / 8)] = GridVal_Damage;
+
+            layer_obj = layer_obj->next;
+        }
+    }
+
+    // Add Checkpoints
+    // --------------------------------------------------------------------------------------
+    else if (std::string("Checkpoints") == layer->name.ptr)
+    {
+        cute_tiled_object_t *layer_obj = layer->objects;
+
+        // Iterate over each collider object
+        while (layer_obj)
+        {
+            // Set all of the grid spaces within the collider to checkpoint
+            for (float temp_w = 0; temp_w < layer_obj->width; temp_w += tile_w)
+                for (float temp_h = 0; temp_h < layer_obj->height; temp_h += tile_h)
+                    (*object_map)[int((layer_obj->x + temp_w) / 8)][int((layer_obj->y + temp_h) / 8)] = GridVal_CheckP;
+
+            layer_obj = layer_obj->next;
+        }
+    }
+    
+    // Add Finish
+    // --------------------------------------------------------------------------------------
+    else if (std::string("Finish") == layer->name.ptr)
+    {
+        cute_tiled_object_t *layer_obj = layer->objects;
+
+        // Iterate over each collider object
+        while (layer_obj)
+        {
+            // Set all of the grid spaces within the collider to finish cell
+            for (float temp_w = 0; temp_w < layer_obj->width; temp_w += tile_w)
+                for (float temp_h = 0; temp_h < layer_obj->height; temp_h += tile_h)
+                    (*object_map)[int((layer_obj->x + temp_w) / 8)][int((layer_obj->y + temp_h) / 8)] = GridVal_Finish;
+
+            layer_obj = layer_obj->next;
+        }
+    }
 }
 
 // Draw map background to the map render texture
@@ -199,7 +268,7 @@ void Map::update()
     ClearBackground(GRAY);
 
     // Draw map layers first
-    for (int i = 0; i < tilelayers_info.size(); i++) 
+    for (int i = 0; i < tilelayers_info.size(); i++)
     {
         DrawTextureRec(tilelayers_info[i].tex.texture,
                        Rectangle{0, 0, (float)tilelayers_info[i].tex.texture.width, (float)-tilelayers_info[i].tex.texture.height},
@@ -217,7 +286,7 @@ void Map::update()
             case GridVal_Player:
                 DrawRectangle(i * 8, j * 8, 8, 8, ColorAlpha(GREEN, 0.5));
                 break;
-            case GridVal_SolidBlock: 
+            case GridVal_SolidBlock:
                 // DrawRectangleLines(i * 8, j * 8, 8, 8, ColorAlpha(BLUE, 0.8));
                 break;
 
@@ -231,6 +300,7 @@ void Map::update()
     EndTextureMode();
 }
 
+// Returns the map's render texture
 RenderTexture2D Map::getRenderTexture()
 {
     return map_target;

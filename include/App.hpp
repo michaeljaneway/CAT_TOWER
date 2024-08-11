@@ -16,16 +16,12 @@ private:
     // Map and map-related values
     //--------------------------------------------------------------------------------------
     std::unique_ptr<Map> map;
-    Vector2 map_pos_offset;
 
     // Grid-based Map
     //--------------------------------------------------------------------------------------
-    // Legend:
-    // 0    - empty
-    // 1    - player
-    // 2    - solid block
     std::vector<std::vector<uint8_t>> object_map;
-
+    std::vector<std::vector<uint8_t>> object_checkp_map;
+    std::vector<std::vector<uint8_t>> object_reset_map;
     // Set screen w and h
     float screen_w;
     float screen_h;
@@ -62,9 +58,6 @@ private:
     Font fear_font;
     Font absolute_font;
     //--------------------------------------------------------------------------------------
-
-    plt::LoopingEase map_x_ease;
-    plt::LoopingEase map_y_ease;
 
     // Textures
     //--------------------------------------------------------------------------------------
@@ -108,6 +101,13 @@ private:
 
     // Get input from player
     void PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player);
+    float player_vert_progress; // Player Vertical Progress
+
+    Vector2i getPlayerPos();
+
+    // Map position system
+    void MapPosSystem();
+    Rectangle map_dest;
 
     // Render the world after all updates
     void RenderSystem();
