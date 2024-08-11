@@ -1,31 +1,19 @@
 {
-    "Map/SizeTest": {
-        "height": 4300,
-        "width": 2
-    },
     "activeFile": "testmap2.tmx",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
         "": {
-            "scaleInDock": 1
+            "scaleInDock": 1.5
         },
         "realtestmap.tmx": {
             "scale": 4,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-<<<<<<< HEAD
                 "x": 37,
                 "y": 55.125
-=======
-                "x": 93.875,
-                "y": 54.75
->>>>>>> 4ba473fddb9e316bfd68d6b932c049a62e583825
             }
-        },
-        "realtestmap.tmx#alienscape_tileset_transparent": {
-            "scaleInDock": 3
         },
         "realtestmap.tmx#tranquiltunnels": {
             "scaleInDock": 1
@@ -57,15 +45,7 @@
             "scaleInDock": 2
         }
     },
-    "last.exportedFilePath": "D:/Desktop/MicroJam20/assets",
     "last.imagePath": "E:/Coding/MicroJam20/assets",
-    "map.fixedSize": true,
-    "map.height": 1000,
-    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
-    "map.lastUsedFormat": "tmx",
-    "map.tileHeight": 8,
-    "map.tileWidth": 8,
-    "map.width": 48,
     "openFiles": [
         "testmap2.tmx"
     ],
@@ -75,9 +55,8 @@
         "realtestmap.tmx",
         "testmap.tmx"
     ],
-    "tileset.embedInMap": true,
     "tileset.tileSize": {
-        "height": 8,
-        "width": 8
+        "height": 9,
+        "width": 9
     }
 }
