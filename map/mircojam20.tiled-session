@@ -1,69 +1,32 @@
 {
-    "activeFile": "realtestmap.tmx",
-    "expandedProjectPaths": [
-        "."
-    ],
     "fileStates": {
-        "": {
-            "scaleInDock": 0.75
-        },
         "realtestmap.tmx": {
-            "expandedObjectLayers": [
-                8,
-                10,
-                3,
-                7
-                7,
-                3
-            ],
-            "scale": 4,
-            "selectedLayer": 2,
+            "scale": 5.3021875,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 93.125,
-                "y": 66.5
+                "x": 79.96699475452348,
+                "y": 63.93587552307421
             }
-        },
-        "realtestmap.tmx#alienscape_tileset_transparent": {
-            "scaleInDock": 3
         },
         "realtestmap.tmx#tranquiltunnels": {
             "scaleInDock": 1
         },
-        "testmap.tmx": {
-            "expandedObjectLayers": [
-                2,
-                4
-            ],
-            "scale": 2,
-            "selectedLayer": 3,
-            "viewCenter": {
-                "x": 64,
-                "y": 64
-            }
-        },
-        "testmap.tmx#tranquil_tunnels": {
-            "scaleInDock": 5.5
-        },
         "testmap2.tmx": {
-            "scale": 2,
-            "selectedLayer": 5,
+            "expandedObjectLayers": [
+                8
+            ],
+            "scale": 3,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 128.5,
-                "y": 3996.5
+                "x": 22.499999999999996,
+                "y": 7794.666666666666
             }
         },
         "testmap2.tmx#[v1.3] tranquil_tunnels_transparent": {
-            "scaleInDock": 1
+            "scaleInDock": 5.5
         }
     },
-    "openFiles": [
-        "realtestmap.tmx",
-        "testmap2.tmx",
-        "testmap.tmx"
-    ],
-    "project": "mircojam20.tiled-project",
     "recentFiles": [
-        "testmap.tmx",
         "testmap2.tmx",
         "realtestmap.tmx"
     ]
