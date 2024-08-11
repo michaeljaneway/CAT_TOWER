@@ -197,7 +197,6 @@ void Map::parseObjLayer(cute_tiled_layer_t *layer)
                 (*object_map)[int(layer_obj->x / 8)][int(layer_obj->y / 8)] = GridVal_Player;
 
                 flecs::entity player_e = ecs_world->entity("Player");
-                player_e.set<plt::Position>({int(layer_obj->x / 8), int(layer_obj->y / 8)});
                 player_e.set<plt::Player>({plt::PlayerMvnmtState_Idle});
             }
 
@@ -240,7 +239,7 @@ void Map::parseObjLayer(cute_tiled_layer_t *layer)
             layer_obj = layer_obj->next;
         }
     }
-    
+
     // Add Finish
     // --------------------------------------------------------------------------------------
     else if (std::string("Finish") == layer->name.ptr)
