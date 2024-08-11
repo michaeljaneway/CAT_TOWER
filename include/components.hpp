@@ -30,6 +30,7 @@ namespace plt
         GameState_MainMenu,
         GameState_Playing,
         GameState_Win,
+        GameState_Lose,
     };
 
     enum GameMusic : uint8_t
@@ -37,7 +38,8 @@ namespace plt
         GameMusic_MainMenu,
         GameMusic_Playing,
         GameMusic_Climax,
-        GameMusic_Win
+        GameMusic_Win,
+        
     };
 
     // Particle effect

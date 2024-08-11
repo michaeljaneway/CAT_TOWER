@@ -16,7 +16,7 @@ App::App(RenderTexture2D target)
 
     // Set gameplay timer
     time_counter = 0;
-    time_limit = 420.0;
+    time_limit = 560.0;
 
     // Debug flag initialization
     //--------------------------------------------------------------------------------------
@@ -238,6 +238,9 @@ void App::handleGameMusic()
         cat_sound = LoadSound("Cat 1.wav");
         SetSoundVolume(cat_sound, 0.4);
 
+        game_over_sound = LoadSound("Game Over II ~ v1.wav");
+        SetSoundVolume(game_over_sound, 0.4);
+
         // Add the music in order with plt::GameMusic enum
         game_music[plt::GameMusic_MainMenu] = LoadMusicStream("music/racing_game_menu_bpm165.mp3");
         SetMusicVolume(game_music[plt::GameMusic_MainMenu], 0.4);
@@ -404,6 +407,14 @@ void App::PlayerSystem(flecs::entity e, plt::Player &player)
     if (game_state != plt::GameState_Playing)
         return;
 
+    // If the time runs out
+    if (time_counter >= time_limit)
+    {
+        PlaySound(game_over_sound);
+        gameReset();
+        game_state = plt::GameState_Lose;
+    }
+
     // Player Input
     if (player.move_state == plt::PlayerMvnmtState_Idle)
     {
@@ -530,6 +541,7 @@ void App::MapPosSystem()
     switch (game_state)
     {
     // In main menu, let just a bit of the map peak out of the top
+    case plt::GameState_Lose:
     case plt::GameState_MainMenu:
     {
         ideal_map_pos.y = (map_dest.height + 20) * -1.f;
@@ -537,6 +549,7 @@ void App::MapPosSystem()
     break;
 
     // While playing, try to vertically center on the player
+    case plt::GameState_Win:
     case plt::GameState_Playing:
     {
         ideal_map_pos.y = screen_h / 2.0 - map_dest.height * player_vert_progress;
@@ -642,9 +655,9 @@ void App::RenderSystem()
     {
         // Title
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 150, 17);
-        GuiLabel(Rectangle{40 + 5, 30 + 5, screen_w - 80, 150}, "Dragon Tower");
+        GuiLabel(Rectangle{40 + 5, 30 + 5, screen_w - 80, 150}, "Cat Tower");
         setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 150, 17);
-        GuiLabel(Rectangle{40, 30, screen_w - 80, 150}, "Dragon Tower");
+        GuiLabel(Rectangle{40, 30, screen_w - 80, 150}, "Cat Tower");
 
         // Title
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
@@ -653,23 +666,23 @@ void App::RenderSystem()
         GuiLabel(Rectangle{40, 170, screen_w - 80, 50}, "Do you have what it takes...");
 
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 60, 17);
-        GuiLabel(Rectangle{40 + 5, 230 + 5, screen_w - 80, 50}, "TO CLIMB THE TOWER?");
+        GuiLabel(Rectangle{40 + 5, 230 + 5, screen_w - 80, 50}, "TO CLIMB THE CAT TOWER?");
         setGuiTextStyle(absolute_font, ColorToInt(RED), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 60, 17);
-        GuiLabel(Rectangle{40, 230, screen_w - 80, 50}, "TO CLIMB THE TOWER?");
+        GuiLabel(Rectangle{40, 230, screen_w - 80, 50}, "TO CLIMB THE CAT TOWER?");
 
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 0.f) + 5, 310 + 5, screen_w * 0.3f, 50}, "Use WASD to");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 0.f) + 5, 310 + 5, screen_w * 0.3f, 50}, "Use WASD to");
         setGuiTextStyle(absolute_font, ColorToInt(BLUE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 0.f), 310, screen_w * 0.3f, 50}, "Use WASD to");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 0.f), 310, screen_w * 0.3f, 50}, "Use WASD to");
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 0.f) + 5, 350 + 5, screen_w * 0.3f, 50}, "slide");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 0.f) + 5, 350 + 5, screen_w * 0.3f, 50}, "slide");
         setGuiTextStyle(absolute_font, ColorToInt(BLUE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 0.f), 350, screen_w * 0.3f, 50}, "slide");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 0.f), 350, screen_w * 0.3f, 50}, "slide");
 
         // Draw Cat
         DrawTexturePro(cat_tex,
                        Rectangle{0, 0, 8, 8},
-                       Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 0.f) + 125 + 5,
+                       Rectangle{(screen_w * 0.23f * 0.f) + 125 + 5,
                                  420 + 5,
                                  screen_w * 0.1f,
                                  screen_w * 0.1f},
@@ -678,7 +691,7 @@ void App::RenderSystem()
                        BLACK);
         DrawTexturePro(cat_tex,
                        Rectangle{0, 0, 8, 8},
-                       Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 0.f) + 125,
+                       Rectangle{(screen_w * 0.23f * 0.f) + 125,
                                  420,
                                  screen_w * 0.1f,
                                  screen_w * 0.1f},
@@ -687,14 +700,14 @@ void App::RenderSystem()
                        WHITE);
 
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 1.f) + 5, 310 + 5, screen_w * 0.3f, 50}, "Avoid Spikes");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 1.f) + 5, 310 + 5, screen_w * 0.3f, 50}, "Avoid Spikes");
         setGuiTextStyle(absolute_font, ColorToInt(ORANGE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 1.f), 310, screen_w * 0.3f, 50}, "Avoid Spikes");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 1.f), 310, screen_w * 0.3f, 50}, "Avoid Spikes");
 
         // Draw Spikes
         DrawTexturePro(ttt_tex,
                        Rectangle{1000, 688, 8, 8},
-                       Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 1.f) + 100 + 5,
+                       Rectangle{(screen_w * 0.23f * 1.f) + 100 + 5,
                                  350 + 5,
                                  screen_w * 0.15f,
                                  screen_w * 0.15f},
@@ -703,7 +716,7 @@ void App::RenderSystem()
                        BLACK);
         DrawTexturePro(ttt_tex,
                        Rectangle{1000, 688, 8, 8},
-                       Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 1.f) + 100,
+                       Rectangle{(screen_w * 0.23f * 1.f) + 100,
                                  350,
                                  screen_w * 0.15f,
                                  screen_w * 0.15f},
@@ -712,18 +725,18 @@ void App::RenderSystem()
                        WHITE);
 
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 2.f) + 5, 310 + 5, screen_w * 0.3f, 50}, "Checkpoints");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 2.f) + 5, 310 + 5, screen_w * 0.3f, 50}, "Checkpoints");
         setGuiTextStyle(absolute_font, ColorToInt(GREEN), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 2.f), 310, screen_w * 0.3f, 50}, "Checkpoints");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 2.f), 310, screen_w * 0.3f, 50}, "Checkpoints");
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 2.f) + 5, 350 + 5, screen_w * 0.3f, 50}, "save progress");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 2.f) + 5, 350 + 5, screen_w * 0.3f, 50}, "save progress");
         setGuiTextStyle(absolute_font, ColorToInt(GREEN), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel(Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 2.f), 350, screen_w * 0.3f, 50}, "save progress");
+        GuiLabel(Rectangle{(screen_w * 0.23f * 2.f), 350, screen_w * 0.3f, 50}, "save progress");
 
         // Draw Checkpoint
         DrawTexturePro(ttt_tex,
                        Rectangle{760, 16, 8, 8},
-                       Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 2.f) + 125 + 5,
+                       Rectangle{(screen_w * 0.23f * 2.f) + 125 + 5,
                                  420 + 5,
                                  screen_w * 0.1f,
                                  screen_w * 0.1f},
@@ -732,7 +745,7 @@ void App::RenderSystem()
                        BLACK);
         DrawTexturePro(ttt_tex,
                        Rectangle{760, 16, 8, 8},
-                       Rectangle{(screen_w * 0.05f) + (screen_w * 0.3f * 2.f) + 125,
+                       Rectangle{(screen_w * 0.23f * 2.f) + 125,
                                  420,
                                  screen_w * 0.1f,
                                  screen_w * 0.1f},
@@ -740,9 +753,27 @@ void App::RenderSystem()
                        0.0,
                        WHITE);
 
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel(Rectangle{(screen_w * 0.23f * 3.f) + 5, 310 + 5, screen_w * 0.3f, 50}, "Beat this");
+        setGuiTextStyle(absolute_font, ColorToInt(PURPLE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel(Rectangle{(screen_w * 0.23f * 3.f), 310, screen_w * 0.3f, 50}, "Beat this");
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel(Rectangle{(screen_w * 0.23f * 3.f) + 5, 350 + 5, screen_w * 0.3f, 50}, "TIME");
+        setGuiTextStyle(absolute_font, ColorToInt(PURPLE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel(Rectangle{(screen_w * 0.23f * 3.f), 350, screen_w * 0.3f, 50}, "TIME");
+
+        // Draw Checkpoint
+        std::stringstream speedrun_limit_stream;
+        speedrun_limit_stream << std::fixed << std::setprecision(2) << time_limit;
+
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{(screen_w * 0.23f * 3.f) + 5, 460 + 5, screen_w * 0.3f, 50}, (speedrun_limit_stream.str() + "s").c_str());
+        setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{(screen_w * 0.23f * 3.f), 460, screen_w * 0.3f, 50}, (speedrun_limit_stream.str() + "s").c_str());
+
         // Play Button
         setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
-        if (GuiButton(Rectangle{screen_w * 0.25f, 580, screen_w - (screen_w * 0.5f), 100}, "PLAY"))
+        if (GuiButton(Rectangle{screen_w * 0.23f, 580, screen_w - (screen_w * 0.5f), 100}, "PLAY"))
             game_state = plt::GameState_Playing;
     }
     break;
@@ -755,11 +786,27 @@ void App::RenderSystem()
         std::stringstream speedrun_stream;
         speedrun_stream << std::fixed << std::setprecision(2) << time_counter;
 
-        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel({50 + 1, screen_h - 100.f + 1, 200, 40}, speedrun_stream.str().c_str());
-        setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel({50, screen_h - 100.f, 200, 40}, speedrun_stream.str().c_str());
+        std::stringstream speedrun_limit_stream;
+        speedrun_limit_stream << std::fixed << std::setprecision(2) << time_limit;
 
+        // Time
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel({50 + 1, screen_h - 200.f + 1, 200, 40}, (speedrun_stream.str() + "s").c_str());
+        setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel({50, screen_h - 200.f, 200, 40}, (speedrun_stream.str() + "s").c_str());
+
+        // Of
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel({50 + 1, screen_h - 150.f + 1, 200, 40}, "OF");
+        setGuiTextStyle(absolute_font, ColorToInt(YELLOW), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel({50, screen_h - 150.f, 200, 40}, "OF");
+
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel({50 + 1, screen_h - 100.f + 1, 200, 40}, (speedrun_limit_stream.str() + "s").c_str());
+        setGuiTextStyle(absolute_font, ColorToInt(RED), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
+        GuiLabel({50, screen_h - 100.f, 200, 40}, (speedrun_limit_stream.str() + "s").c_str());
+
+        // Menu Button
         setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
         if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
         {
@@ -770,7 +817,7 @@ void App::RenderSystem()
     break;
     case plt::GameState_Win:
     {
-        DrawRectangleRec({screen_w / 2.f - screen_w * 0.3f, 0, screen_w * 0.6f, screen_h}, ColorAlpha(DARKBLUE, 0.8f));
+        DrawRectangleRec({screen_w / 2.f - screen_w * 0.3f, 0, screen_w * 0.6f, screen_h}, ColorAlpha(BLACK, 0.8f));
 
         // You WIN
         setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
@@ -790,16 +837,47 @@ void App::RenderSystem()
         // Restart Button
         setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
 
-        if (GuiButton(Rectangle{screen_w * 0.25f, 400, screen_w - (screen_w * 0.5f), 100}, "RESTART"))
+        if (GuiButton(Rectangle{screen_w * 0.23f, 400, screen_w - (screen_w * 0.5f), 100}, "RESTART"))
         {
-            gameReset();
             game_state = plt::GameState_Playing;
+            gameReset();
         }
 
+        // Menu Button
         setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
         if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
         {
             game_state = plt::GameState_MainMenu;
+            gameReset();
+        }
+    }
+    break;
+    case plt::GameState_Lose:
+    {
+        DrawRectangleRec({screen_w / 2.f - screen_w * 0.3f, 0, screen_w * 0.6f, screen_h}, ColorAlpha(BLACK, 0.8f));
+
+        // You LOSE
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "You LOSE");
+        setGuiTextStyle(absolute_font, ColorToInt(RED), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "You LOSE");
+
+        // Restart Button
+        setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+
+        if (GuiButton(Rectangle{screen_w * 0.23f, 400, screen_w - (screen_w * 0.5f), 100}, "RESTART"))
+        {
+            game_state = plt::GameState_Playing;
+            StopSound(game_over_sound);
+            gameReset();
+        }
+
+        // Menu Button
+        setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+        if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
+        {
+            game_state = plt::GameState_MainMenu;
+            StopSound(game_over_sound);
             gameReset();
         }
     }
