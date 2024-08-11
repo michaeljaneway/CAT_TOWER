@@ -1,5 +1,5 @@
 {
-    "activeFile": "testmap2.tmx",
+    "activeFile": "realtestmap.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -13,12 +13,14 @@
                 10,
                 3,
                 7
+                7,
+                3
             ],
             "scale": 4,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 79.875,
-                "y": 64
+                "x": 93.125,
+                "y": 66.5
             }
         },
         "realtestmap.tmx#alienscape_tileset_transparent": {
@@ -46,15 +48,14 @@
             "scale": 2,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 162.25,
-                "y": 7854.5
+                "x": 128.5,
+                "y": 3996.5
             }
         },
         "testmap2.tmx#[v1.3] tranquil_tunnels_transparent": {
             "scaleInDock": 1
         }
     },
-    "last.imagePath": "E:/Coding/MicroJam20/assets",
     "openFiles": [
         "realtestmap.tmx",
         "testmap2.tmx",
@@ -62,12 +63,8 @@
     ],
     "project": "mircojam20.tiled-project",
     "recentFiles": [
-        "realtestmap.tmx",
         "testmap.tmx",
-        "testmap2.tmx"
-    ],
-    "tileset.tileSize": {
-        "height": 9,
-        "width": 9
-    }
+        "testmap2.tmx",
+        "realtestmap.tmx"
+    ]
 }
