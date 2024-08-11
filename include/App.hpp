@@ -99,6 +99,7 @@ private:
     // Sounds
     Sound jump_sound;
     Sound cat_sound;
+    Sound game_over_sound;
 
     //--------------------------------------------------------------------------------------
 
