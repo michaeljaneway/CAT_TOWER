@@ -260,7 +260,7 @@ void Map::parseObjLayer(cute_tiled_layer_t *layer)
 }
 
 // Draw map background to the map render texture
-void Map::update()
+void Map::update(Direction player_o, Texture2D player_tex)
 {
     // Begin rendering to the map texture
     BeginTextureMode(map_target);
@@ -283,11 +283,41 @@ void Map::update()
             switch ((*object_map)[i][j])
             {
             case GridVal_Player:
-                DrawRectangle(i * 8, j * 8, 8, 8, ColorAlpha(GREEN, 0.5));
-                break;
+            {
+                float player_rot = 0;
+
+                switch (player_o)
+                {
+                case Direction_Down:
+                    player_rot = 0.f;
+                    break;
+                case Direction_Up:
+                    player_rot = 180.f;
+                    break;
+                case Direction_Left:
+                    player_rot = 270.f;
+                    break;
+                case Direction_Right:
+                    player_rot = 90.f;
+                    break;
+
+                default:
+                    break;
+                }
+
+                DrawTexturePro(player_tex,
+                               Rectangle{1000, 664, 8, 8},
+                               Rectangle{i * 8.f + tile_w / 2.f, j * 8.f + tile_h / 2.f, 8, 8},
+                               {tile_w / 2.f, tile_h / 2.f}, player_rot, WHITE);
+            }
+            break;
+
+                // Draw colliders
             case GridVal_SolidBlock:
+            {
                 // DrawRectangleLines(i * 8, j * 8, 8, 8, ColorAlpha(BLUE, 0.8));
-                break;
+            }
+            break;
 
             case GridVal_Empty:
             default:

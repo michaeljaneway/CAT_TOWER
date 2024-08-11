@@ -19,9 +19,14 @@ private:
 
     // Grid-based Map
     //--------------------------------------------------------------------------------------
+    Direction player_orient;
+    Direction player_checkp_orient;
+    Direction player_reset_map_orient;
+    
     std::vector<std::vector<uint8_t>> object_map;
     std::vector<std::vector<uint8_t>> object_checkp_map;
     std::vector<std::vector<uint8_t>> object_reset_map;
+
     // Set screen w and h
     float screen_w;
     float screen_h;
@@ -30,6 +35,8 @@ private:
     //--------------------------------------------------------------------------------------
 
     float time_counter;
+
+    float time_limit;
 
     // Debug GUI Values
     //--------------------------------------------------------------------------------------
@@ -63,7 +70,7 @@ private:
     //--------------------------------------------------------------------------------------
 
     // Default Texture
-    Texture2D def_tex;
+    Texture2D ttt_tex;
 
     void loadTexFromImg(std::string img_file, Texture2D *tex);
 

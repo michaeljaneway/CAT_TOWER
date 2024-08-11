@@ -70,7 +70,7 @@ public:
     ~Map();
 
     // Draw the map texture to the screen
-    void update();
+    void update(Direction player_o, Texture2D player_tex);
 
     RenderTexture2D getRenderTexture();
 };

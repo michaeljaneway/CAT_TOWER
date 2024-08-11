@@ -35,7 +35,9 @@ namespace plt
     enum GameMusic : uint8_t
     {
         GameMusic_MainMenu,
+        GameMusic_Playing,
         GameMusic_Climax,
+        GameMusic_Win
     };
 
     // Particle effect
