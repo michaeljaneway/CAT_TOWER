@@ -7,7 +7,7 @@ Map::Map(flecs::world *ecs_world, std::vector<std::vector<uint8_t>> *object_map)
     this->ecs_world = ecs_world;
 
     // Parse Map
-    map = cute_tiled_load_map_from_file("realtestmap.json", NULL);
+    map = cute_tiled_load_map_from_file("testmap2.json", NULL);
 
     loadTilesets();
 

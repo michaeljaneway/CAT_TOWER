@@ -54,10 +54,12 @@ App::App(RenderTexture2D target)
 
     // Destination w and h stay the same
     RenderTexture2D map_tex = map->getRenderTexture();
-    map_dest.width = map_tex.texture.width * 4;
-    map_dest.height = map_tex.texture.width * 4;
+    map_dest.width = map_tex.texture.width * 4.f;
+    map_dest.height = map_tex.texture.height * 4.f;
+
     map_dest.x = screen_w / 2 - map_dest.width / 2;
-    map_dest.y = (-map_dest.height) + 20;
+    map_dest.y = -map_dest.height;
+
     player_vert_progress = 0.f;
 
     // Set first chekpoint and reset maps now
@@ -374,15 +376,15 @@ void App::PlayerSystem(flecs::entity e, plt::Player &player)
     // Player Input
     if (player.move_state == plt::PlayerMvnmtState_Idle)
     {
-        if (IsKeyPressed(KEY_W))
+        if (IsKeyDown(KEY_W))
             player.move_state = plt::PlayerMvnmtState_Up;
-        if (IsKeyPressed(KEY_S))
+        if (IsKeyDown(KEY_S))
             player.move_state = plt::PlayerMvnmtState_Down;
-        if (IsKeyPressed(KEY_A))
+        if (IsKeyDown(KEY_A))
             player.move_state = plt::PlayerMvnmtState_Left;
-        if (IsKeyPressed(KEY_D))
+        if (IsKeyDown(KEY_D))
             player.move_state = plt::PlayerMvnmtState_Right;
-        if (IsKeyPressed(KEY_R))
+        if (IsKeyDown(KEY_R))
         {
             object_map = object_checkp_map;
             return;
@@ -477,15 +479,15 @@ void App::PlayerSystem(flecs::entity e, plt::Player &player)
 // Handle the map's position on the screen
 void App::MapPosSystem()
 {
-    Vector2 ideal_map_pos;
+    Vector2 ideal_map_pos = {0, 0};
     RenderTexture2D map_tex = map->getRenderTexture();
+
+    // Destination w and h stay the same
+    map_dest.width = map_tex.texture.width * 4.f;
+    map_dest.height = map_tex.texture.height * 4.f;
 
     // It will always be ideal to have the map horz. centered on the screen
     ideal_map_pos.x = screen_w / 2 - map_dest.width / 2;
-
-    // Destination w and h stay the same
-    map_dest.width = map_tex.texture.width * 4;
-    map_dest.height = map_tex.texture.height * 4;
 
     // Determine ideal vertical map position on the screen
     // --------------------------------------------------------------------------------------
@@ -494,14 +496,14 @@ void App::MapPosSystem()
     // In main menu, let just a bit of the map peak out of the top
     case plt::GameState_MainMenu:
     {
-        ideal_map_pos.y = (-map_dest.height) + 20;
+        ideal_map_pos.y = (map_dest.height + 20) * -1.f;
     }
     break;
 
     // While playing, try to vertically center on the player
     case plt::GameState_Playing:
     {
-        ideal_map_pos.y = screen_h / 2.0 - (map_dest.height) * (player_vert_progress);
+        ideal_map_pos.y = screen_h / 2.0 - map_dest.height * player_vert_progress;
     }
     break;
     default:
