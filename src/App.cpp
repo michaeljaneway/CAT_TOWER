@@ -26,7 +26,7 @@ App::App(RenderTexture2D target)
 
     // Audio flag initialization
     //--------------------------------------------------------------------------------------
-
+ 
     is_audio_initialized = false;
 
     // Load fonts
