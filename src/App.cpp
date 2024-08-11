@@ -54,10 +54,12 @@ App::App(RenderTexture2D target)
 
     // Destination w and h stay the same
     RenderTexture2D map_tex = map->getRenderTexture();
-    map_dest.width = map_tex.texture.width * 4;
-    map_dest.height = map_tex.texture.width * 4;
+    map_dest.width = map_tex.texture.width * 4.f;
+    map_dest.height = map_tex.texture.height * 4.f;
+
     map_dest.x = screen_w / 2 - map_dest.width / 2;
-    map_dest.y = (-map_dest.height) + 20;
+    map_dest.y = -map_dest.height;
+
     player_vert_progress = 0.f;
 
     // Set first chekpoint and reset maps now
@@ -136,11 +138,11 @@ void App::loadTexFromImg(std::string img_file, Texture2D *tex)
 // Initialize all Flecs systems
 void App::initFlecsSystems()
 {
-    flecs::system player_system = ecs_world->system<plt::Position, plt::Player>()
+    flecs::system player_system = ecs_world->system<plt::Player>()
                                       .kind(flecs::PreUpdate)
-                                      .each([&](flecs::entity e, plt::Position &pos, plt::Player &player)
+                                      .each([&](flecs::entity e, plt::Player &player)
                                             {
-                                                PlayerSystem(e, pos, player); //
+                                                PlayerSystem(e, player); //
                                             });
 
     flecs::system map_system = ecs_world->system()
@@ -173,6 +175,22 @@ void App::initFlecsSystems()
                                            {
                                                RenderSystem(); //
                                            });
+}
+
+// Reset the game
+void App::gameReset()
+{
+    // Reset map and checkpoint
+    object_map = object_reset_map;
+    object_checkp_map = object_reset_map;
+
+    particle_vec.clear();
+
+    // Reset timer
+    time_counter = 0.0;
+
+    // Set game state
+    game_state = plt::GameState_Playing;
 }
 
 // App update
@@ -210,9 +228,10 @@ void App::handleGameMusic()
 
         jump_sound = LoadSound("Jump 1.wav");
 
-        // Add the music
+        // Add the music in order with plt::GameMusic enum
         game_music.push_back(LoadMusicStream("music/fever_stadium_bpm165.mp3"));
         SetMusicVolume(game_music.back(), 0.4);
+
         game_music.push_back(LoadMusicStream("music/fever_stadium_climax_bpm180.mp3"));
         SetMusicVolume(game_music.back(), 0.4);
     }
@@ -225,6 +244,7 @@ void App::handleGameMusic()
 
     case plt::GameState_Playing:
     {
+        playGameMusic(game_music[plt::GameMusic_Climax]);
     }
     break;
 
@@ -341,8 +361,18 @@ Vector2i App::getPlayerPos()
 // ======================================================================================
 
 // Handle the player
-void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
+void App::PlayerSystem(flecs::entity e, plt::Player &player)
 {
+    // Get player's position on the grid once player wants to move
+    Vector2i pos = getPlayerPos();
+
+    // Calculate current player progress
+    player_vert_progress = (float)pos.y / (float)object_map.back().size();
+
+    // Don't try to move if not currently playing the game
+    if (game_state != plt::GameState_Playing)
+        return;
+
     // Player Input
     if (player.move_state == plt::PlayerMvnmtState_Idle)
     {
@@ -357,8 +387,6 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
         if (IsKeyDown(KEY_R))
         {
             object_map = object_checkp_map;
-            Vector2i player_pos = getPlayerPos();
-            pos = {player_pos.x, player_pos.y};
             return;
         }
     }
@@ -394,13 +422,14 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
     // After moving, player is back to idle
     player.move_state = plt::PlayerMvnmtState_Idle;
 
+    // Handle what you were hit by
     switch (mov_info.blocked_by)
     {
         // Hit a damage block
     case GridVal_Damage:
     {
         // Create blood
-        createParticlesInCell({mov_info.final_pos.x, mov_info.final_pos.y}, 0.3, RED, 0.3);
+        // createParticlesInCell({mov_info.final_pos.x, mov_info.final_pos.y}, 0.3, RED, 250.5);
         object_map = object_checkp_map;
         Vector2i player_pos = getPlayerPos();
         pos = {player_pos.x, player_pos.y};
@@ -443,22 +472,22 @@ void App::PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player)
     pos.x = mov_info.final_pos.x;
     pos.y = mov_info.final_pos.y;
 
-    // Calculate player progress
+    // Recalculate player progress after move
     player_vert_progress = (float)pos.y / (float)object_map.back().size();
 }
 
 // Handle the map's position on the screen
 void App::MapPosSystem()
 {
-    Vector2 ideal_map_pos;
+    Vector2 ideal_map_pos = {0, 0};
     RenderTexture2D map_tex = map->getRenderTexture();
+
+    // Destination w and h stay the same
+    map_dest.width = map_tex.texture.width * 4.f;
+    map_dest.height = map_tex.texture.height * 4.f;
 
     // It will always be ideal to have the map horz. centered on the screen
     ideal_map_pos.x = screen_w / 2 - map_dest.width / 2;
-
-    // Destination w and h stay the same
-    map_dest.width = map_tex.texture.width * 4;
-    map_dest.height = map_tex.texture.height * 4;
 
     // Determine ideal vertical map position on the screen
     // --------------------------------------------------------------------------------------
@@ -467,14 +496,14 @@ void App::MapPosSystem()
     // In main menu, let just a bit of the map peak out of the top
     case plt::GameState_MainMenu:
     {
-        ideal_map_pos.y = (-map_dest.height) + 20;
+        ideal_map_pos.y = (map_dest.height + 20) * -1.f;
     }
     break;
 
     // While playing, try to vertically center on the player
     case plt::GameState_Playing:
     {
-        ideal_map_pos.y = screen_h / 2.0 - (map_dest.height) * (player_vert_progress);
+        ideal_map_pos.y = screen_h / 2.0 - map_dest.height * player_vert_progress;
     }
     break;
     default:
@@ -493,31 +522,24 @@ void App::MapPosSystem()
 // Update all particles and delete ones that are done
 void App::ParticleSystem()
 {
-    std::vector<plt::ParticleBit>::iterator iter;
-    for (iter = particle_vec.begin(); iter != particle_vec.end();)
+    for (int i = 0; i < particle_vec.size();)
     {
-        if (updateParticle(&(*iter)))
-            iter = particle_vec.erase(iter);
+        // Make particle fall
+        particle_vec[i].pos.y += particle_vec[i].fall_speed * ecs_world->delta_time();
+
+        printf("%lf\n", particle_vec[i].fall_speed * ecs_world->delta_time());
+
+        // Determine if the particle should be erased
+        if (particle_vec[i].pos.y >= 1.2 * screen_h)
+            particle_vec.erase(particle_vec.begin() + i);
         else
-            ++iter;
+            ++i;
     }
-}
-
-// Updates a falling particle, returns true if particle is done
-bool App::updateParticle(plt::ParticleBit *particle)
-{
-    particle->pos.y += particle->fall_speed * ecs_world->delta_time();
-
-    if (particle->pos.y >= 1.2 * screen_h)
-    {
-        return true;
-    }
-
-    return false;
 }
 
 void App::createParticlesInCell(Vector2i cell, float fall_speed, Color col, float density)
 {
+    // Determine how many particles should be made
     int part_count = (int)(density * 100.0);
 
     for (int i = 0; i < part_count; i++)
@@ -526,8 +548,10 @@ void App::createParticlesInCell(Vector2i cell, float fall_speed, Color col, floa
         new_particle.col = col;
         new_particle.fall_speed = 0.1;
 
-        new_particle.pos.x = map_dest.x + (float)(cell.x / object_map.size()) * map_dest.width;
-        new_particle.pos.y = map_dest.y + (float)(cell.y / object_map.back().size()) * map_dest.height;
+        new_particle.pos.x = map_dest.x + ((float)cell.x / (float)object_map.size()) * map_dest.width;
+        new_particle.pos.y = map_dest.y + ((float)cell.y / (float)object_map.back().size()) * map_dest.height;
+
+        printf("%lf %lf\n", new_particle.pos.x, new_particle.pos.y);
 
         particle_vec.push_back(new_particle);
     }
@@ -606,18 +630,41 @@ void App::RenderSystem()
         setGuiTextStyle(lookout_font, ColorToInt(WHITE), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 28, 30);
         GuiLabel({10, screen_h - 40.f, 200, 40}, speedrun_stream.str().c_str());
     }
+    break;
     case plt::GameState_Win:
     {
+        DrawRectangleRec({screen_w / 2.f - screen_w * 0.3f, 0, screen_w * 0.6f, screen_h}, ColorAlpha(DARKBLUE, 0.8f));
+
+        // You WIN
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "You WIN");
+        setGuiTextStyle(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "You WIN");
+
+        // Win Time
+        std::stringstream speedrun_stream;
+        speedrun_stream << std::fixed << std::setprecision(2) << time_counter;
+
+        setGuiTextStyle(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{40 + 5, 120 + 5, screen_w - 80, 200}, (speedrun_stream.str() + "s").c_str());
+        setGuiTextStyle(absolute_font, ColorToInt(RED), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
+        GuiLabel(Rectangle{40, 120, screen_w - 80, 200}, (speedrun_stream.str() + "s").c_str());
+
+        // Restart Button
+        setGuiTextStyle(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+
+        if (GuiButton(Rectangle{screen_w * 0.25f, 400, screen_w - (screen_w * 0.5f), 100}, "RESTART"))
+            gameReset();
     }
     break;
     }
 
     for (int i = 0; i < particle_vec.size(); i++)
     {
-        DrawRectangle(particle_vec[i].pos.x - 1,
-                      particle_vec[i].pos.y - 1,
-                      2,
-                      2,
+        DrawRectangle(particle_vec[i].pos.x - 5,
+                      particle_vec[i].pos.y - 5,
+                      10,
+                      10,
                       particle_vec[i].col);
     }
 

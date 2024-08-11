@@ -102,7 +102,7 @@ private:
     // Player system
     //--------------------------
     // Get input from player
-    void PlayerSystem(flecs::entity e, plt::Position &pos, plt::Player &player);
+    void PlayerSystem(flecs::entity e, plt::Player &player);
     float player_vert_progress; // Player Vertical Progress
     Vector2i getPlayerPos();
 
@@ -113,8 +113,6 @@ private:
     // Update all particles and delete ones that are done
     void ParticleSystem();
 
-    // Updates a falling particle, returns true if particle is done
-    bool updateParticle(plt::ParticleBit *particle);
     void createParticlesInCell(Vector2i cell, float fall_speed, Color col, float density);
     void createParticlesOnCellEdge(Vector2i cell, Direction edge, float fall_speed, Color col, float density);
 
@@ -138,6 +136,8 @@ private:
 
     // Check what type of entity is at the specified location
     GridVal gridCheck(Vector2i pos);
+
+    void gameReset();
 
 public:
     App(RenderTexture2D target);

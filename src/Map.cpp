@@ -7,7 +7,7 @@ Map::Map(flecs::world *ecs_world, std::vector<std::vector<uint8_t>> *object_map)
     this->ecs_world = ecs_world;
 
     // Parse Map
-    map = cute_tiled_load_map_from_file("realtestmap.json", NULL);
+    map = cute_tiled_load_map_from_file("testmap2.json", NULL);
 
     loadTilesets();
 
@@ -197,7 +197,6 @@ void Map::parseObjLayer(cute_tiled_layer_t *layer)
                 (*object_map)[int(layer_obj->x / 8)][int(layer_obj->y / 8)] = GridVal_Player;
 
                 flecs::entity player_e = ecs_world->entity("Player");
-                player_e.set<plt::Position>({int(layer_obj->x / 8), int(layer_obj->y / 8)});
                 player_e.set<plt::Player>({plt::PlayerMvnmtState_Idle});
             }
 
@@ -240,7 +239,7 @@ void Map::parseObjLayer(cute_tiled_layer_t *layer)
             layer_obj = layer_obj->next;
         }
     }
-    
+
     // Add Finish
     // --------------------------------------------------------------------------------------
     else if (std::string("Finish") == layer->name.ptr)
