@@ -22,7 +22,7 @@ private:
     Direction player_orient;
     Direction player_checkp_orient;
     Direction player_reset_map_orient;
-    
+
     std::vector<std::vector<uint8_t>> object_map;
     std::vector<std::vector<uint8_t>> object_checkp_map;
     std::vector<std::vector<uint8_t>> object_reset_map;
@@ -71,6 +71,7 @@ private:
 
     // Default Texture
     Texture2D ttt_tex;
+    Texture2D cat_tex;
 
     void loadTexFromImg(std::string img_file, Texture2D *tex);
 
@@ -90,13 +91,14 @@ private:
 
     // Audio
     //--------------------------------------------------------------------------------------
-    std::vector<Music> game_music;
+    std::map<plt::GameMusic, Music> game_music;
 
     void handleGameMusic();
     void playGameMusic(Music &mus);
 
     // Sounds
     Sound jump_sound;
+    Sound cat_sound;
 
     //--------------------------------------------------------------------------------------
 

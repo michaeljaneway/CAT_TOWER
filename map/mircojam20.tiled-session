@@ -1,11 +1,14 @@
 {
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
     "fileStates": {
         "realtestmap.tmx": {
-            "scale": 5.3021875,
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 79.96699475452348,
-                "y": 63.93587552307421
+                "x": 109.75,
+                "y": 99.5
             }
         },
         "realtestmap.tmx#tranquiltunnels": {
@@ -26,6 +29,11 @@
             "scaleInDock": 5.5
         }
     },
+    "last.exportedFilePath": "D:/Desktop/MicroJam20/assets",
+    "map.lastUsedExportFilter": "All Files (*)",
+    "openFiles": [
+    ],
+    "project": "mircojam20.tiled-project",
     "recentFiles": [
         "testmap2.tmx",
         "realtestmap.tmx"

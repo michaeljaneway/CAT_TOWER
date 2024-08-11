@@ -148,6 +148,12 @@ void Map::parseTileLayer(cute_tiled_layer_t *layer)
             if (FlippedVerticallyFlag & tile_flags)
                 src_rect.height *= -1;
 
+            // if (FlippedAntiDiagonallyFlag & tile_flags)
+            // {
+            //     src_rect.width *= -1;
+            //     src_rect.height *= -1;
+            // }
+
             Rectangle dest_rect = {(float)column * tile_w, (float)row * tile_h, (float)tile_w, (float)tile_h};
 
             // Draw to the rendertexture
@@ -306,7 +312,7 @@ void Map::update(Direction player_o, Texture2D player_tex)
                 }
 
                 DrawTexturePro(player_tex,
-                               Rectangle{1000, 664, 8, 8},
+                               Rectangle{0, 0, 8, 8},
                                Rectangle{i * 8.f + tile_w / 2.f, j * 8.f + tile_h / 2.f, 8, 8},
                                {tile_w / 2.f, tile_h / 2.f}, player_rot, WHITE);
             }
