@@ -22,7 +22,7 @@ App::App(RenderTexture2D target)
     //--------------------------------------------------------------------------------------
 
     render_colliders = false;
-    render_positions = false;
+    render_positions = false; 
 
     // Audio flag initialization
     //--------------------------------------------------------------------------------------

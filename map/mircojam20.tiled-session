@@ -9,16 +9,16 @@
         },
         "realtestmap.tmx": {
             "expandedObjectLayers": [
+                10,
                 3,
                 8,
-                10,
                 7
             ],
             "scale": 4,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 78,
-                "y": 133.75
+                "x": 79.875,
+                "y": 64
             }
         },
         "realtestmap.tmx#alienscape_tileset_transparent": {
@@ -29,8 +29,8 @@
         },
         "testmap.tmx": {
             "expandedObjectLayers": [
-                2,
-                4
+                4,
+                2
             ],
             "scale": 2,
             "selectedLayer": 3,
@@ -44,16 +44,16 @@
         },
         "testmap2.tmx": {
             "expandedObjectLayers": [
-                8,
+                6,
                 4,
-                7,
-                6
+                8,
+                7
             ],
-            "scale": 1,
-            "selectedLayer": 4,
+            "scale": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 132,
-                "y": 1840
+                "x": 129.25,
+                "y": 1000.5
             }
         },
         "testmap2.tmx#[v1.3] tranquil_tunnels_transparent": {

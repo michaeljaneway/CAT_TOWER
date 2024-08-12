@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="33" height="460" tilewidth="8" tileheight="8" infinite="0" nextlayerid="10" nextobjectid="657">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="33" height="460" tilewidth="8" tileheight="8" infinite="0" nextlayerid="10" nextobjectid="657">
  <editorsettings>
   <export target="../assets/testmap2.json" format="json"/>
  </editorsettings>
@@ -593,7 +593,7 @@
 397,268,268,269,268,773,773,773,773,773,268,268,268,268,269,391,0,643,396,396,268,268,268,396,396,268,396,396,269,396,396,268,397,
 396,268,396,268,775,0,0,0,0,0,771,396,396,396,397,519,0,643,397,396,269,268,269,269,772,773,774,774,268,269,397,268,269,
 397,268,268,519,0,0,0,0,0,0,0,515,397,397,397,647,0,643,268,268,269,268,397,519,0,0,0,0,771,397,268,268,269,
-268,396,396,519,0,0,0,0,0,0,0,771,774,774,396,775,0,771,396,772,772,772,773,775,0,0,0,0,0,387,269,396,397,
+268,396,396,519,0,0,0,0,0,0,0,771,774,774,396,775,0,515,773,772,772,772,773,775,0,0,0,0,0,387,269,396,397,
 269,268,268,519,0,0,0,0,0,0,0,0,0,0,655,0,0,783,0,0,0,0,0,0,0,0,0,0,0,515,397,396,268,
 396,269,773,775,0,0,0,0,0,0,0,0,0,0,783,0,0,0,0,0,0,0,0,0,0,0,0,0,0,771,773,397,396,
 397,391,0,802,0,0,0,0,0,0,0,0,0,0,0,0,864,0,0,0,0,0,0,0,0,0,0,0,0,0,929,387,396,
@@ -940,7 +940,7 @@
  <objectgroup id="8" name="Objects">
   <object id="256" name="Spawn" x="16" y="3656" width="8" height="8"/>
  </objectgroup>
- <objectgroup id="4" name="Collision">
+ <objectgroup id="4" name="Collision" visible="0">
   <object id="5" x="0" y="3536" width="168" height="120"/>
   <object id="6" x="168" y="3536" width="48" height="48"/>
   <object id="7" x="0" y="3664" width="264" height="16"/>
