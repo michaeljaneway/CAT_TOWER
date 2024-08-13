@@ -1,6 +1,6 @@
 ![image](https://github.com/user-attachments/assets/a86bc9eb-4da8-4c3b-bef6-5b87b6837340)
 
-_This is the repo for **CAT TOWER**, a game made by Michael Janeway and Ryan for [MicroJam 20](https://itch.io/jam/micro-jam-020)_  
+_This is the repo for **CAT TOWER**, a game made by Michael Janeway and Ryan Porter for [MicroJam 20](https://itch.io/jam/micro-jam-020)_  
 _It can be played [here](https://happyfacemike.itch.io/cat-tower)._
 
 **CAT TOWER** is a time-limited speedrunning puzzle platformer where you play as **THE CAT** trying to make it to the top. Will you make it all the way, or will you fall behind...
