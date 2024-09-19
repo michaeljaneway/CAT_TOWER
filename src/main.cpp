@@ -10,11 +10,11 @@
 
 // Tiled loader
 #define CUTE_TILED_IMPLEMENTATION
-#include "cute_tiled.h"
+#include "cute/cute_tiled.h"
 
 // Collision
 #define CUTE_C2_IMPLEMENTATION
-#include "cute_c2.hpp"
+#include "cute/cute_c2.hpp"
 
 // The constant screen resolution
 const int screen_w_const = 1280;

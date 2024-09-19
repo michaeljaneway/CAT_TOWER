@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
 
 # ========================================================================
-# Commands to download emsdk if not downloaded
+# Commands to download emsdk 3.1.64 if not downloaded
 # ========================================================================
 
 if (NOT EXISTS ../emsdk)
-    execute_process(COMMAND git clone https://github.com/emscripten-core/emsdk
+    execute_process(COMMAND git clone --depth 1 --branch 3.1.64 https://github.com/emscripten-core/emsdk
         WORKING_DIRECTORY ..)
 endif()
 

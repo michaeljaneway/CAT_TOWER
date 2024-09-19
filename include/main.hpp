@@ -35,10 +35,10 @@
 #include <emscripten/html5.h>
 
 // 'Tiled'-generated Map loader (ensure map assets are in assets folder)
-#include "cute_tiled.h"
+#include "cute/cute_tiled.h"
 
 // Collision Detection and Resolution
-#include "cute_c2.hpp"
+#include "cute/cute_c2.hpp"
 
 // CUSTOM CLASSES/TYPES HERE
 // ===================================================================
@@ -46,6 +46,10 @@
 class Map;
 
 class App;
+
+class Particle;
+
+class ParticleSystem;
 
 // CUSTOM FILES HERE
 // ===================================================================
@@ -87,6 +91,9 @@ struct MoveInfo
 
 // Tiled map class
 #include "Map.hpp"
+
+// Particle System
+#include "ParticleSystem.hpp"
 
 // Main application
 #include "App.hpp"

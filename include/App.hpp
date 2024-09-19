@@ -13,6 +13,8 @@ private:
     //--------------------------------------------------------------------------------------
     std::unique_ptr<flecs::world> ecs_world;
 
+    std::vector<ParticleSystem> p_systems;
+
     // Map and map-related values
     //--------------------------------------------------------------------------------------
     std::unique_ptr<Map> map;
@@ -121,10 +123,10 @@ private:
     std::vector<plt::ParticleBit> particle_vec;
 
     // Update all particles and delete ones that are done
-    void ParticleSystem();
+    // void ParticleSystem();
 
-    void createParticlesInCell(Vector2i cell, float fall_speed, Color col, float density);
-    void createParticlesOnCellEdge(Vector2i cell, Direction edge, float fall_speed, Color col, float density);
+    // void createParticlesInCell(Vector2i cell, float fall_speed, Color col, float density);
+    // void createParticlesOnCellEdge(Vector2i cell, Direction edge, float fall_speed, Color col, float density);
 
     // Map system
     //--------------------------

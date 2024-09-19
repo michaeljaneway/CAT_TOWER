@@ -22,11 +22,11 @@ App::App(RenderTexture2D target)
     //--------------------------------------------------------------------------------------
 
     render_colliders = false;
-    render_positions = false; 
+    render_positions = false;
 
     // Audio flag initialization
     //--------------------------------------------------------------------------------------
- 
+
     is_audio_initialized = false;
 
     // Load fonts
@@ -167,13 +167,13 @@ void App::initFlecsSystems()
                                                 MapPosSystem(); //
                                             });
 
-    flecs::system part_system = ecs_world->system()
-                                    .kind(flecs::PostUpdate)
-                                    .run([&](flecs::iter &it)
-                                         {
-                                             // Update where the map should be drawn
-                                             ParticleSystem(); //
-                                         });
+    // flecs::system part_system = ecs_world->system()
+    //                                 .kind(flecs::PostUpdate)
+    //                                 .run([&](flecs::iter &it)
+    //                                      {
+    //                                          // Update where the map should be drawn
+    //                                          ParticleSystem(); //
+    //                                      });
 
     flecs::system render_system = ecs_world->system()
                                       .kind(flecs::PostUpdate)
@@ -569,46 +569,46 @@ void App::MapPosSystem()
 }
 
 // Update all particles and delete ones that are done
-void App::ParticleSystem()
-{
-    for (int i = 0; i < particle_vec.size();)
-    {
-        // Make particle fall
-        particle_vec[i].pos.y += particle_vec[i].fall_speed * ecs_world->delta_time();
+// void App::ParticleSystem()
+// {
+//     for (int i = 0; i < particle_vec.size();)
+//     {
+//         // Make particle fall
+//         particle_vec[i].pos.y += particle_vec[i].fall_speed * ecs_world->delta_time();
 
-        printf("%lf\n", particle_vec[i].fall_speed * ecs_world->delta_time());
+//         printf("%lf\n", particle_vec[i].fall_speed * ecs_world->delta_time());
 
-        // Determine if the particle should be erased
-        if (particle_vec[i].pos.y >= 1.2 * screen_h)
-            particle_vec.erase(particle_vec.begin() + i);
-        else
-            ++i;
-    }
-}
+//         // Determine if the particle should be erased
+//         if (particle_vec[i].pos.y >= 1.2 * screen_h)
+//             particle_vec.erase(particle_vec.begin() + i);
+//         else
+//             ++i;
+//     }
+// }
 
-void App::createParticlesInCell(Vector2i cell, float fall_speed, Color col, float density)
-{
-    // Determine how many particles should be made
-    int part_count = (int)(density * 100.0);
+// void App::createParticlesInCell(Vector2i cell, float fall_speed, Color col, float density)
+// {
+//     // Determine how many particles should be made
+//     int part_count = (int)(density * 100.0);
 
-    for (int i = 0; i < part_count; i++)
-    {
-        plt::ParticleBit new_particle;
-        new_particle.col = col;
-        new_particle.fall_speed = 0.1;
+//     for (int i = 0; i < part_count; i++)
+//     {
+//         plt::ParticleBit new_particle;
+//         new_particle.col = col;
+//         new_particle.fall_speed = 0.1;
 
-        new_particle.pos.x = map_dest.x + ((float)cell.x / (float)object_map.size()) * map_dest.width;
-        new_particle.pos.y = map_dest.y + ((float)cell.y / (float)object_map.back().size()) * map_dest.height;
+//         new_particle.pos.x = map_dest.x + ((float)cell.x / (float)object_map.size()) * map_dest.width;
+//         new_particle.pos.y = map_dest.y + ((float)cell.y / (float)object_map.back().size()) * map_dest.height;
 
-        printf("%lf %lf\n", new_particle.pos.x, new_particle.pos.y);
+//         printf("%lf %lf\n", new_particle.pos.x, new_particle.pos.y);
 
-        particle_vec.push_back(new_particle);
-    }
-}
+//         particle_vec.push_back(new_particle);
+//     }
+// }
 
-void App::createParticlesOnCellEdge(Vector2i cell, Direction edge, float fall_speed, Color col, float density)
-{
-}
+// void App::createParticlesOnCellEdge(Vector2i cell, Direction edge, float fall_speed, Color col, float density)
+// {
+// }
 
 // Render system (onto render texture)
 void App::RenderSystem()
@@ -884,14 +884,18 @@ void App::RenderSystem()
     break;
     }
 
-    for (int i = 0; i < particle_vec.size(); i++)
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
-        DrawRectangle(particle_vec[i].pos.x - 5,
-                      particle_vec[i].pos.y - 5,
-                      10,
-                      10,
-                      particle_vec[i].col);
+        Vector2 m_pos = (Vector2){(float)GetRandomValue((GetMousePosition().x - 20) * 10, (GetMousePosition().x + 20) * 10) * .1f, (float)GetMousePosition().y};
+        p_systems.emplace_back(m_pos);
     }
+
+    p_systems.erase(
+        std::remove_if(p_systems.begin(), p_systems.end(), [](ParticleSystem &sys)
+                       { 
+                   sys.update();
+				   return sys.draw(); }),
+        p_systems.end());
 
     EndTextureMode();
 }
