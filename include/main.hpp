@@ -83,8 +83,8 @@ struct MoveInfo
     GridVal blocked_by;
 };
 
-// Random small classes/functions
-#include "util.hpp"
+// Raylib QOL extension  
+#include "raylib_extension.hpp"
 
 // Custom Flecs components
 #include "components.hpp"

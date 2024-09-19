@@ -4,7 +4,7 @@ Particle::Particle(Vector2 &pos)
     : position{pos}
 {
     acc = {0.0f, 0.05f};
-    velocity = {(float)GetRandomValue(-20, 20) * .1f, (float)GetRandomValue(-50, -20) * .1f};
+    velocity = {(float)GetRandomValue(-5, 5) * .1f, (float)GetRandomValue(-5, 20) * .1f};
     size = {5.0f};
 }
 
@@ -19,14 +19,14 @@ bool Particle::update()
 
 void Particle::draw()
 {
-    // DrawCircle(position.x, position.y, size, RED);
+    DrawCircle(position.x, position.y, size, RED);
     DrawRectangle(position.x, position.y, size, size, ORANGE);
-    // DrawCircleLines(position.x, position.y, size, RAYWHITE);
+    DrawCircleLines(position.x, position.y, size, RAYWHITE);
 }
 
 ParticleSystem::ParticleSystem(Vector2 &pos)
 {
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 10; i++)
         particles.emplace_back(pos);
 }
 
