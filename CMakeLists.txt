@@ -67,6 +67,13 @@ FetchContent_Declare(
     OVERRIDE_FIND_PACKAGE
 )
 
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY          https://github.com/nlohmann/json.git
+    GIT_TAG                 v3.11.3
+    OVERRIDE_FIND_PACKAGE
+)
+
 # Dont build supplied examples & games 
 set(BUILD_EXAMPLES      OFF CACHE BOOL "" FORCE)
 set(BUILD_GAMES         OFF CACHE BOOL "" FORCE)
@@ -81,6 +88,8 @@ option(FLECS_SHARED "Build shared flecs lib" ON)
 option(FLECS_STATIC "Build static flecs lib" OFF)
 FetchContent_MakeAvailable(flecs)
 
+FetchContent_MakeAvailable(json)
+
 # ========================================================================
 # Includes and Libs
 # ========================================================================
@@ -93,6 +102,7 @@ target_include_directories(
     "${raylib_SOURCE_DIR}/include"
     "${raygui_SOURCE_DIR}/src"
     "${flecs_SOURCE_DIR}/include"
+    "${json_SOURCE_DIR}/include"
 )
 
 target_link_libraries(
@@ -100,6 +110,7 @@ target_link_libraries(
     
     raylib
     flecs
+    nlohmann_json::nlohmann_json
 )
 
 # ========================================================================
@@ -108,7 +119,7 @@ target_link_libraries(
 
 if (CMAKE_SYSTEM_NAME STREQUAL Emscripten)
     set(CMAKE_EXECUTABLE_SUFFIX .html)    
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -sASSERTIONS=1 -sUSE_GLFW=3 -sALLOW_MEMORY_GROWTH -sTOTAL_STACK=128MB -sSTACK_SIZE=32MB -sINITIAL_MEMORY=64MB --shell-file \"${CMAKE_SOURCE_DIR}/minshell.html\"")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -sASSERTIONS=1 -sUSE_GLFW=3 -sALLOW_MEMORY_GROWTH -sTOTAL_STACK=128MB -sFETCH -sSTACK_SIZE=32MB -sINITIAL_MEMORY=64MB --shell-file \"${CMAKE_SOURCE_DIR}/minshell.html\"")
 
     # Map assets to root of .data file (only if assets folder exists)
     if (EXISTS "${CMAKE_SOURCE_DIR}/assets")
@@ -124,7 +135,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL Emscripten)
         COMMAND ${CMAKE_COMMAND} -E echo "copying ${PROJECT_NAME}.html to index.html"
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.html ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/index.html
         COMMAND ${CMAKE_COMMAND} -E echo "packaging files to zip"
-        COMMAND cd "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" && ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/itch_package.zip" --format=zip -- "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/index.html" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.js" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.wasm" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.data" && cd ..
+        COMMAND cd "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" && ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/itch_package.zip" --format=zip -- "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/index.html" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.js" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.wasm" && cd ..
         COMMAND ${CMAKE_COMMAND} -E echo "deleting index.html after packaging"
         COMMAND ${CMAKE_COMMAND} -E rm -f ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/index.html
     )
