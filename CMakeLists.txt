@@ -5,22 +5,24 @@ cmake_minimum_required(VERSION 3.21)
 # ========================================================================
 
 if (NOT EXISTS ../emsdk)
-    execute_process(COMMAND git clone --depth 1 --branch 3.1.64 https://github.com/emscripten-core/emsdk
-        WORKING_DIRECTORY ..)
+    execute_process(COMMAND git -c advice.detachedHead=false clone --depth 1 --branch 3.1.64 https://github.com/emscripten-core/emsdk
+                    WORKING_DIRECTORY ..
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    OUTPUT_QUIET)
 endif()
 
 # ========================================================================
 # Install (if uninstalled) and activate emsdk
 # ========================================================================
 
-execute_process(COMMAND emsdk.bat install latest
+execute_process(COMMAND emsdk.bat install latest 
 WORKING_DIRECTORY ../emsdk
 RESULT_VARIABLE cmd_result
 OUTPUT_VARIABLE cmd_ver
 OUTPUT_STRIP_TRAILING_WHITESPACE
 OUTPUT_QUIET)
 
-execute_process(COMMAND emsdk.bat activate latest
+execute_process(COMMAND emsdk.bat activate latest 
 WORKING_DIRECTORY ../emsdk
 RESULT_VARIABLE cmd_result
 OUTPUT_VARIABLE cmd_ver
