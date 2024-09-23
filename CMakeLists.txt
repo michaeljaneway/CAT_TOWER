@@ -100,7 +100,6 @@ target_link_libraries(
     
     raylib
     flecs
-    nlohmann_json::nlohmann_json
 )
 
 # ========================================================================
