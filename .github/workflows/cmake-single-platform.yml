@@ -23,11 +23,11 @@ jobs:
         version: 3.1.64
         actions-cache-folder: 'emsdk-cache'
     
-    - name: Verify
+    - name: Verify emsdk
       run: emcc -v
 
-    # - name: Configure CMake
-    #   run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+    - name: Configure CMake
+      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     # - name: Build
     #   run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
