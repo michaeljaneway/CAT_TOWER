@@ -16,18 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: seanmiddleditch/gha-setup-ninja@master
-    
-    - name: Setup emsdk
-      uses: mymindstorm/setup-emsdk@v14
-      with:
-        version: 3.1.64
-        actions-cache-folder: 'emsdk-cache'
-    
-    - name: Verify emsdk
-      run: emcc -v
 
     - name: Configure CMake
-      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=D:/a/CAT_TOWER/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
 
     # - name: Build
     #   run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
