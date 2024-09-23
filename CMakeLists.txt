@@ -67,13 +67,6 @@ FetchContent_Declare(
     OVERRIDE_FIND_PACKAGE
 )
 
-FetchContent_Declare(
-    json
-    GIT_REPOSITORY          https://github.com/nlohmann/json.git
-    GIT_TAG                 v3.11.3
-    OVERRIDE_FIND_PACKAGE
-)
-
 # Dont build supplied examples & games 
 set(BUILD_EXAMPLES      OFF CACHE BOOL "" FORCE)
 set(BUILD_GAMES         OFF CACHE BOOL "" FORCE)
@@ -88,8 +81,6 @@ option(FLECS_SHARED "Build shared flecs lib" ON)
 option(FLECS_STATIC "Build static flecs lib" OFF)
 FetchContent_MakeAvailable(flecs)
 
-FetchContent_MakeAvailable(json)
-
 # ========================================================================
 # Includes and Libs
 # ========================================================================
@@ -102,7 +93,6 @@ target_include_directories(
     "${raylib_SOURCE_DIR}/include"
     "${raygui_SOURCE_DIR}/src"
     "${flecs_SOURCE_DIR}/include"
-    "${json_SOURCE_DIR}/include"
 )
 
 target_link_libraries(

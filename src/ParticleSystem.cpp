@@ -4,8 +4,8 @@ Particle::Particle(Vector2 &pos)
     : position{pos}
 {
     acc = {0.0f, 0.05f};
-    velocity = {(float)GetRandomValue(-5, 5) * .1f, (float)GetRandomValue(-5, 20) * .1f};
-    size = {5.0f};
+    velocity = {(float)GetRandomValue(-5, 5) * .1f, (float)GetRandomValue(-5, 30) * .1f};
+    size = {10.0f};
 }
 
 bool Particle::update()
