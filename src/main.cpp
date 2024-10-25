@@ -21,7 +21,7 @@ const int screen_w_const = 1280;
 const int screen_h_const = 720;
 
 // The resolution of the window the application is in (browser window size)
-int screen_w = screen_w_const;  
+int screen_w = screen_w_const;
 int screen_h = screen_h_const;
 
 // Main app
@@ -30,13 +30,13 @@ std::unique_ptr<App> main_app;
 // Render texture on which the application will be rendered
 RenderTexture2D target;
 
-// Render texture destination rectangle  
+// Render texture destination rectangle
 Rectangle tex_dest;
 
 // Calculate the application's render texture destination rect
 // --------------------------------------------------------------------------------------
 void calcTexDest();
-   
+
 // Scale and translate mouse input to reflect its position on the render texture
 // --------------------------------------------------------------------------------------
 void transformMouseInput();
@@ -45,7 +45,7 @@ void transformMouseInput();
 // --------------------------------------------------------------------------------------
 void updateAndDraw();
 
-// C++ Main  
+// C++ Main
 // --------------------------------------------------------------------------------------
 int main(int argc, char const *argv[])
 {
@@ -59,7 +59,7 @@ int main(int argc, char const *argv[])
     target = LoadRenderTexture(screen_w, screen_h);
 
     // Initialize the main App
-    main_app = std::make_unique<App>(target);
+    main_app = std::make_unique<App>(target, Vector2{(float)screen_w_const, (float)screen_h_const});
 
     // This function is deprecated but its replacement doesn't produce the same result
     emscripten_set_canvas_size(1, 1);

@@ -4,12 +4,12 @@
 // ==================================================
 
 // Constructor
-App::App(RenderTexture2D target)
+App::App(RenderTexture2D target, Vector2 screen_size)
 {
     // Set screen w and h
     this->target = target;
-    this->screen_w = target.texture.width;
-    this->screen_h = target.texture.height;
+    this->screen_w = screen_size.x;
+    this->screen_h = screen_size.y;
 
     // Timing initialization
     //--------------------------------------------------------------------------------------

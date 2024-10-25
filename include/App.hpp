@@ -152,7 +152,7 @@ private:
     void gameReset();
 
 public:
-    App(RenderTexture2D target);
+    App(RenderTexture2D target, Vector2 screen_siz);
     ~App();
 
     // Update the application (audio will be updated more often than display)
