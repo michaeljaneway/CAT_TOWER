@@ -790,10 +790,25 @@ void App::RenderSystem()
 
     // p_systems.erase(
     //     std::remove_if(p_systems.begin(), p_systems.end(), [](ParticleSystem &sys)
-    //                    { 
+    //                    {
     //                sys.update();
-	// 			   return sys.draw(); }),
+    // 			   return sys.draw(); }),
     //     p_systems.end());
+
+    // Define the camera to look into our 3d world
+    Camera3D camera = {0};
+    camera.position = (Vector3){10.0f, 10.0f, 10.0f}; // Camera position
+    camera.target = (Vector3){0.0f, 0.0f, 0.0f};      // Camera looking at point
+    camera.up = (Vector3){0.0f, 1.0f, 0.0f};          // Camera up vector (rotation towards target)
+    camera.fovy = 45.0f;                              // Camera field-of-view Y
+    camera.projection = CAMERA_PERSPECTIVE;           // Camera projection type
+
+    {
+        BeginMode3D(camera);
+        DrawCubeV({-2.5, -2.5, -2.5}, {5.f, 5.f, 5.f}, RED);
+        DrawCubeWiresV({-2.5, -2.5, -2.5}, {5.f, 5.f, 5.f}, MAROON);
+        EndMode3D();
+    }
 
     EndTextureMode();
 }
