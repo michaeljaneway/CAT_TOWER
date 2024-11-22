@@ -167,14 +167,6 @@ void App::initFlecsSystems()
                                                 MapPosSystem(); //
                                             });
 
-    // flecs::system part_system = ecs_world->system()
-    //                                 .kind(flecs::PostUpdate)
-    //                                 .run([&](flecs::iter &it)
-    //                                      {
-    //                                          // Update where the map should be drawn
-    //                                          ParticleSystem(); //
-    //                                      });
-
     flecs::system render_system = ecs_world->system()
                                       .kind(flecs::PostUpdate)
                                       .run([&](flecs::iter &it)
@@ -533,7 +525,7 @@ void App::MapPosSystem()
     map_dest.width = map_tex.texture.width * 2.5f;
     map_dest.height = map_tex.texture.height * 2.5f;
 
-    // It will always be ideal to have the map horz. centered on the screen
+    // It will always be ideal to have the map horizontally centered on the screen
     ideal_map_pos.x = screen_w / 2 - map_dest.width / 2;
 
     // Determine ideal vertical map position on the screen
@@ -564,8 +556,11 @@ void App::MapPosSystem()
 
     float dist_to_ideal = abs(Vector2Distance({map_dest.x, map_dest.y}, ideal_map_pos));
 
-    map_dest.x += (ideal_map_pos.x - map_dest.x) * 0.01 * dist_to_ideal * ecs_world->delta_time();
-    map_dest.y += (ideal_map_pos.y - map_dest.y) * 0.01 * dist_to_ideal * ecs_world->delta_time();
+    float des_x = (ideal_map_pos.x - map_dest.x) * 0.01 * dist_to_ideal * ecs_world->delta_time();
+    float des_y = (ideal_map_pos.y - map_dest.y) * 0.01 * dist_to_ideal * ecs_world->delta_time();
+
+    map_dest.x += std::abs(des_x) > 100.f ? 100.f * std::copysignf(1.0, des_x) : des_x;
+    map_dest.y += std::abs(des_y) > 100.f ? 100.f * std::copysignf(1.0, des_y) : des_y;
 }
 
 // Render system (onto render texture)

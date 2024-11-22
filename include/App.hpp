@@ -122,12 +122,6 @@ private:
     //--------------------------
     std::vector<plt::ParticleBit> particle_vec;
 
-    // Update all particles and delete ones that are done
-    // void ParticleSystem();
-
-    // void createParticlesInCell(Vector2i cell, float fall_speed, Color col, float density);
-    // void createParticlesOnCellEdge(Vector2i cell, Direction edge, float fall_speed, Color col, float density);
-
     // Map system
     //--------------------------
 

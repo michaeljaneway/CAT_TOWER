@@ -64,6 +64,10 @@
         "algorithm": "cpp",
         "condition_variable": "cpp",
         "fstream": "cpp",
-        "*.m": "cpp"
+        "*.m": "cpp",
+        "future": "cpp",
+        "list": "cpp",
+        "set": "cpp",
+        "unordered_set": "cpp"
     }
 }
