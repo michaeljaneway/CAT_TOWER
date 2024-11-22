@@ -19,9 +19,7 @@ bool Particle::update()
 
 void Particle::draw()
 {
-    DrawCircle(position.x, position.y, size, RED);
-    DrawRectangle(position.x, position.y, size, size, ORANGE);
-    DrawCircleLines(position.x, position.y, size, RAYWHITE);
+    DrawRectangle(position.x, position.y, size, size, BLACK);
 }
 
 ParticleSystem::ParticleSystem(Vector2 &pos)

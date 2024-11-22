@@ -699,24 +699,20 @@ void App::RenderSystem()
         speedrun_limit_stream << std::fixed << std::setprecision(2) << time_limit;
 
         // Time
-        // SetGuiTextProps(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel({50 + 1, screen_h - 200.f + 1, 200, 40}, (speedrun_stream.str() + "s").c_str());
-        // SetGuiTextProps(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel({50, screen_h - 200.f, 200, 40}, (speedrun_stream.str() + "s").c_str());
+        SetGuiTextProps({absolute_font, WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17});
+        DrawGuiLabelShadow({50, screen_h - 200.f, 200, 40}, (speedrun_stream.str() + "s").c_str(), {5, 5}, BLACK);
 
         // Of
-        // SetGuiTextProps(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel({50 + 1, screen_h - 150.f + 1, 200, 40}, "OF");
-        // SetGuiTextProps(absolute_font, ColorToInt(YELLOW), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel({50, screen_h - 150.f, 200, 40}, "OF");
+        SetGuiTextProps({absolute_font, YELLOW, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17});
+        DrawGuiLabelShadow({50, screen_h - 150.f, 200, 40}, "OF", {5, 5}, BLACK);
 
-        // SetGuiTextProps(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel({50 + 1, screen_h - 100.f + 1, 200, 40}, (speedrun_limit_stream.str() + "s").c_str());
-        // SetGuiTextProps(absolute_font, ColorToInt(RED), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17);
-        GuiLabel({50, screen_h - 100.f, 200, 40}, (speedrun_limit_stream.str() + "s").c_str());
+        // <current-time>
+        SetGuiTextProps({absolute_font, RED, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 50, 17});
+        DrawGuiLabelShadow({50, screen_h - 100.f, 200, 40}, (speedrun_limit_stream.str() + "s").c_str(), {5, 5}, BLACK);
 
         // Menu Button
-        // SetGuiTextProps(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+        // --------------------------------------------------------------------------------------
+        SetGuiTextProps({absolute_font, Color{0x2B, 0x26, 0x27, 0xFF}, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30});
         if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
         {
             game_state = plt::GameState_MainMenu;
@@ -729,22 +725,18 @@ void App::RenderSystem()
         DrawRectangleRec({screen_w / 2.f - screen_w * 0.3f, 0, screen_w * 0.6f, screen_h}, ColorAlpha(BLACK, 0.8f));
 
         // You WIN
-        // SetGuiTextProps(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-        GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "You WIN");
-        // SetGuiTextProps(absolute_font, ColorToInt(WHITE), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-        GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "You WIN");
+        SetGuiTextProps({absolute_font, WHITE, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17});
+        DrawGuiLabelShadow({40, 40, screen_w - 80, 200}, "You WIN", {5, 5}, BLACK);
 
         // Win Time
         std::stringstream speedrun_stream;
         speedrun_stream << std::fixed << std::setprecision(2) << time_counter;
 
-        // SetGuiTextProps(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-        GuiLabel(Rectangle{40 + 5, 120 + 5, screen_w - 80, 200}, (speedrun_stream.str() + "s").c_str());
-        // SetGuiTextProps(absolute_font, ColorToInt(RED), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-        GuiLabel(Rectangle{40, 120, screen_w - 80, 200}, (speedrun_stream.str() + "s").c_str());
+        SetGuiTextProps({absolute_font, RED, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17});
+        DrawGuiLabelShadow({40, 120, screen_w - 80, 200}, (speedrun_stream.str() + "s").c_str(), {5, 5}, BLACK);
 
         // Restart Button
-        // SetGuiTextProps(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+        SetGuiTextProps({absolute_font, Color{0x2B, 0x26, 0x27, 0xFF}, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30});
 
         if (GuiButton(Rectangle{screen_w * 0.23f, 400, screen_w - (screen_w * 0.5f), 100}, "RESTART"))
         {
@@ -753,7 +745,7 @@ void App::RenderSystem()
         }
 
         // Menu Button
-        // SetGuiTextProps(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+        SetGuiTextProps({absolute_font, Color{0x2B, 0x26, 0x27, 0xFF}, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30});
         if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
         {
             game_state = plt::GameState_MainMenu;
@@ -766,14 +758,11 @@ void App::RenderSystem()
         DrawRectangleRec({screen_w / 2.f - screen_w * 0.3f, 0, screen_w * 0.6f, screen_h}, ColorAlpha(BLACK, 0.8f));
 
         // You LOSE
-        // SetGuiTextProps(absolute_font, ColorToInt(BLACK), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-        GuiLabel(Rectangle{40 + 5, 40 + 5, screen_w - 80, 200}, "You LOSE");
-        // SetGuiTextProps(absolute_font, ColorToInt(RED), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17);
-        GuiLabel(Rectangle{40, 40, screen_w - 80, 200}, "You LOSE");
+        SetGuiTextProps({absolute_font, RED, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, 100, 17});
+        DrawGuiLabelShadow({40, 40, screen_w - 80, 200}, "You LOSE", {5, 5}, BLACK);
 
         // Restart Button
-        // SetGuiTextProps(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
-
+        SetGuiTextProps({absolute_font, Color{0x2B, 0x26, 0x27, 0xFF}, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30});
         if (GuiButton(Rectangle{screen_w * 0.23f, 400, screen_w - (screen_w * 0.5f), 100}, "RESTART"))
         {
             game_state = plt::GameState_Playing;
@@ -782,7 +771,7 @@ void App::RenderSystem()
         }
 
         // Menu Button
-        // SetGuiTextProps(absolute_font, ColorToInt(Color{0x2B, 0x26, 0x27, 0xFF}), TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30);
+        SetGuiTextProps({absolute_font, Color{0x2B, 0x26, 0x27, 0xFF}, TEXT_ALIGN_CENTER, TEXT_ALIGN_MIDDLE, lookout_font.baseSize / 3, 30});
         if (GuiButton(Rectangle{100, 100, 120, 80}, "Menu"))
         {
             game_state = plt::GameState_MainMenu;
@@ -793,18 +782,18 @@ void App::RenderSystem()
     break;
     }
 
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
-    {
-        Vector2 m_pos = (Vector2){(float)GetRandomValue((GetMousePosition().x - 20) * 10, (GetMousePosition().x + 20) * 10) * .1f, (float)GetMousePosition().y};
-        p_systems.emplace_back(m_pos);
-    }
+    // if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+    // {
+    //     Vector2 m_pos = (Vector2){(float)GetRandomValue((GetMousePosition().x - 20) * 10, (GetMousePosition().x + 20) * 10) * .1f, (float)GetMousePosition().y};
+    //     p_systems.emplace_back(m_pos);
+    // }
 
-    p_systems.erase(
-        std::remove_if(p_systems.begin(), p_systems.end(), [](ParticleSystem &sys)
-                       { 
-                   sys.update();
-				   return sys.draw(); }),
-        p_systems.end());
+    // p_systems.erase(
+    //     std::remove_if(p_systems.begin(), p_systems.end(), [](ParticleSystem &sys)
+    //                    { 
+    //                sys.update();
+	// 			   return sys.draw(); }),
+    //     p_systems.end());
 
     EndTextureMode();
 }
